@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Message</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z"
+      crossorigin="anonymous"
+    />
+
+    <style></style> 
+  </head>
+  <body>
+    <div
+      class="container d-none align-items-center justify-content-center min-vh-100"
+      id="login-screen"
+    >
+      <form class="text-center" id="enter-chat">
+        <div class="form-group align-middle">
+          <label for="user_id">Token</label>
+          <input
+            type="text"
+            class="form-control"
+            id="user_id"
+            aria-describedby="emailHelp"
+          />
+          <small id="emailHelp" class="form-text text-muted"
+            >We'll never share your Token with anyone else.</small
+          >
+        </div>
+        <button type="submit" class="btn btn-primary">Enter</button>
+      </form>
+    </div>
+
+    <div class="d-flex" id="message-screen">
+      <div class="list-group col-6" id="room_ssids"></div>
+      <div class="col-9">
+        <ul class="list-group list-group-flush" id="messages"></ul>
+        <hr />
+        <div
+          class="d-flex justify-content-between align-items-center"
+          id="send-form"
+        >
+          <input
+            type="text"
+            class="form-control"
+            style="width: 500px"
+            id="message"
+            placeholder="message"
+          />
+          <button style="height: 50px" class="btn btn-primary" id="send">
+            Submit
+          </button>
+        </div>
+        <hr />
+        <div
+          class="d-flex justify-content-between align-items-center"
+          id="crate-room-form"
+        >
+          <input
+            type="text"
+            class="form-control"
+            style="width: 500px"
+            id="token"
+            placeholder="token"
+          />
+          <button style="height: 50px" class="btn btn-primary" id="create-room">
+            Create Room
+          </button>
+        </div>
+      </div>
+    </div>
+  </body>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.1/socket.io.js"></script>
+  <script>
+    const inputUserID = document.getElementById("user_id");
+    const enterChatForm = document.getElementById("enter-chat");
+    const room_ssids_element = document.getElementById("room_ssids");
+    const messages_element = document.getElementById("messages");
+    const message_input = document.getElementById("message");
+    const tokenInput = document.getElementById("token");
+    const sendBtn = document.getElementById("send");
+    const createRoomBtn = document.getElementById("create-room");
+    const socket = io("http://localhost:1234", {
+      reconnection: false,
+      "sync disconnect on unload": true,
+    });
+    const messageScreen = document.getElementById("message-screen");
+    const loginScreen = document.getElementById("login-screen");
+
+    messageScreen.className = "container d-none";
+    loginScreen.className =
+      "container d-flex align-items-center justify-content-center min-vh-100";
+    sessionStorage.setItem("chats", JSON.stringify({}));
+    sessionStorage.setItem("selected", "");
+
+    socket.on("connect", () => {
+      enterChatForm.addEventListener("submit", (e) => {
+        const token = "Bearer: " + inputUserID.value;
+        socket.emit("login", token);
+        e.preventDefault();
+      });
+
+      socket.on("status", (e) => {
+        console.log(e);
+        if (e.status_code == 200) {
+          console.log("You are logged in");
+          (loginScreen.className =
+            "container d-none align-items-center justify-content-center min-vh-100"),
+            (messageScreen.className = "container d-flex");
+        }
+      });
+
+      socket.on("f-message", (m) => {
+        //chats = m;
+
+        sessionStorage.setItem("chats", JSON.stringify(m));
+        let a;
+        for (let room_ssid in m) {
+          if (m.hasOwnProperty(room_ssid)) {
+            room_ssids_element.innerHTML += `<li class="list-group-item d-flex justify-content-between align-items-center">
+    ${room_ssid}
+  </li>`;
+
+            a = room_ssid;
+          }
+        }
+
+        if (a != undefined) {
+          console.log(a);
+          sessionStorage.setItem("selected", a);
+          const arr = Array.from(room_ssids_element.children);
+          for (let index = 0; index < arr.length; index++) {
+            if (arr[index].textContent == sessionStorage.getItem("selected")) {
+              arr[index].className = "";
+            }
+          }
+          for (let i = 0; i < m[a].messages.length; i++) {
+            messages_element.innerHTML += `<li class="list-group-item">${m[a].messages[i].message}</li>`;
+          }
+        }
+      });
+
+      socket.on("g-message", (m) => {
+        let cht = JSON.parse(sessionStorage.getItem("chats"));
+        if (m.room_ssid == sessionStorage.getItem("selected")) {
+          messages_element.innerHTML += `<li class="list-group-item">${m.message}</li>`;
+          cht[m.room_ssid].messages.push(m);
+        } else {
+          cht[m.room_ssid].messages.push(m);
+        }
+        sessionStorage.setItem("chats", JSON.stringify(cht));
+      });
+
+      socket.on("online", ({ user_id, room_id, online }) => {
+        console.log(
+          `Room : ${room_id} User_id : ${user_id}  online status : ${online}`
+        );
+      });
+
+      room_ssids_element.addEventListener("click", (e) => {
+        let cht = JSON.parse(sessionStorage.getItem("chats"));
+        const clicked_ssid = e.target.textContent.trim();
+        messages_element.innerHTML = "";
+        console.log(e.target.textContent.trim());
+        console.log(cht.hasOwnProperty(clicked_ssid));
+
+        for (i = 0; i < cht[clicked_ssid].messages.length; i++) {
+          messages_element.innerHTML += `<li class="list-group-item">${cht[clicked_ssid].messages[i].message}</li>`;
+        }
+        sessionStorage.setItem("selected", clicked_ssid);
+      });
+
+      sendBtn.addEventListener("click", (e) => {
+        const message = message_input.value.trim();
+        let cht = JSON.parse(sessionStorage.getItem("chats"));
+        const ssid = sessionStorage.getItem("selected");
+
+        console.log(ssid);
+        console.log(cht[ssid].users[1]);
+
+        socket.emit("s-message", {
+          room_ssid: ssid,
+          from: cht[ssid].users[0].user,
+          to: cht[ssid].users[1].user,
+          from_path: cht[ssid].users[0].user_path,
+          to_path: cht[ssid].users[1].user_path,
+          message: message,
+        });
+      });
+
+      createRoomBtn.addEventListener("click", (e) => {
+        const token = "Bearer: " + tokenInput.value.trim();
+
+        socket.emit("join", token);
+      });
+
+      socket.on("g-chat", (chat) => {
+        let cht = JSON.parse(sessionStorage.getItem("chats"));
+        if (!cht.hasOwnProperty(chat.room_ssid)) {
+          sessionStorage.setItem("selected", chat.room_ssid);
+          cht[chat.room_ssid] = chat;
+          sessionStorage.setItem("chats", JSON.stringify(cht));
+          room_ssids_element.innerHTML += `<li class="list-group-item d-flex justify-content-between align-items-center">
+    ${chat.room_ssid}
+  </li>`;
+        }
+      });
+    });
+  </script>
+</html>
