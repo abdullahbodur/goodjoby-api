@@ -145,7 +145,7 @@ router.post(
 
 router.post(
   "/create_pending_work",
-  [tokenControl, tokenRoleControl("client"), /*modelAccess(Client)*/],
+  [tokenControl, tokenRoleControl("client"),blockedControl(Client) /*modelAccess(Client)*/],
   createPendingWork
 );
 
@@ -157,19 +157,19 @@ router.get("/cancel_work_accept/:work_id", cancelWrkAccept, cancelWorkAccept);
 
 router.put(
   "/cancel_work/:work_id",
-  [tokenControl,blockedControl(Client), tokenRoleControl("client"), cancelWrk(true, "client")],
+  [tokenControl, tokenRoleControl("client"),blockedControl(Client), cancelWrk(true, "client")],
   cancelWork
 );
 
 router.put(
   "/cancel_p_work/:work_id",
-  [tokenControl,blockedControl(Client), tokenRoleControl("client")],
+  [tokenControl, tokenRoleControl("client"),blockedControl(Client),],
   cancelAnyPendingWork
 );
 
 router.put(
   "/accept_offer/:offer_id",
-  [tokenControl,blockedControl(Client), tokenRoleControl("client")],
+  [tokenControl, tokenRoleControl("client"),blockedControl(Client),],
   acceptAnyOffer
 );
 
@@ -177,7 +177,7 @@ router.get("/get_service_questions/:service_id", getServiceQuestions);
 
 router.post(
   "/add_document_to_work/:id",
-  [tokenControl,blockedControl(Client), tokenRoleControl("client"), uploadDocuments.array("document")],
+  [tokenControl, tokenRoleControl("client"),blockedControl(Client), uploadDocuments.array("document")],
   uploadNewDocuments
 );
 

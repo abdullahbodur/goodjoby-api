@@ -26,29 +26,30 @@ const authRegister = errorHandlerWrapper(async (model, req, res) => {
 const authSignIn = errorHandlerWrapper(async (model, req, res, next) => {
   let { email, password } = req.body;
 
-  if (!inputControl) {
+  if (!inputControl)
     return next(new CustomError("Please, provide email and password", 400));
-  }
 
   email.toLowerCase();
 
   const objectModel = await model.findOne({ email: email }).select("+password");
 
-  if (objectModel === null) {
+  if (objectModel === null)
     return next(
       new CustomError("Email or Password is wrong, Please try again", 400)
     );
-  }
 
-  if (!comparePasswordInModel(password, objectModel.password)) {
+  if (!comparePasswordInModel(password, objectModel.password))
     return next(
       new CustomError("Email or Password is wrong, Please try again", 400)
     );
-  }
+
+  if (objectModel.blocked)
+    return next(
+      new CustomError("You are have been banned for any reason", 403)
+    );
 
   sendJwtToUser(objectModel, res);
 });
-
 
 // == == == == == == == == == == == == == == == == == == == ==
 //  SIGN IN ADMIN
@@ -79,11 +80,6 @@ const adminSignInHelp = errorHandlerWrapper(async (req, res, next) => {
 
   sendJwtToUser(admin, res);
 });
-
-
-
-
-
 
 // == == == == == == == == == == == == == == == == == == == ==
 //  GET PROFILE OWNER ACCESS COMPANY - CLIENT - EXPER
@@ -219,7 +215,7 @@ const uploadedPFSaver = errorHandlerWrapper(async (model, req, next, prop) => {
   const objectModel = await model.findByIdAndUpdate(req.user.id, obj, {
     new: true,
     runValidators: true,
-  }); 
+  });
 
   req.uploadedUser = objectModel;
   return next();
