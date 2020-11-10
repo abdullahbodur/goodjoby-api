@@ -4,9 +4,9 @@ const {
   adminStageControl,
   adminTokenControl,
   existControl,
-  adminAuthorityControl
+  adminAuthorityControl,
 } = require("../middlewares/tokenControls/tokenControls");
-const { 
+const {
   adminRegisterHelper,
   adminSignInHelper,
 } = require("../helpers/Auth/adminAuthHelper");
@@ -37,12 +37,10 @@ router.post("/login", adminSignInHelper, loginAdmin);
 //  PARAM REQUESTS
 // == == == == == == == == == == == == == == == == == == == ==
 
-
-
-router.put("/cancel_work/:work_id",[adminTokenControl,adminStageControl([2,3,4])],)
-
-
-
+router.put("/cancel_work/:work_id", [
+  adminTokenControl,
+  adminStageControl([2, 3, 4]),
+]);
 
 router.put(
   "/update_sub_admin/:id",
@@ -73,7 +71,5 @@ router.delete(
   adminAuthorityControl,
   deleteAdmin
 );
-
-
 
 module.exports = router;
