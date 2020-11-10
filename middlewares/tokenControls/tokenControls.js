@@ -78,31 +78,25 @@ const tokenRoleControl = (role_name) => {
   };
 };
 
-
 // == == == == == == == == == == == == == == == == == == == ==
 //  BLOCKED CONTROL
 // == == == == == == == == == == == == == == == == == == == ==
 
 const blockedControl = (model) =>
   errorHandlerWrapper(async (req, res, next) => {
-    
-    
     if (!req.user.id) return next(new CustomError("Please provide an id", 400));
 
+    const objectModel = await model.findById(req.user.id);
 
-
-
-    const objectModel = await model.findOne({
-      id: req.user.id,
-      blocked: false,
-    });
-
-    if (!objectModel)
+    
+    if (objectModel.blocked)
       return next(
         new CustomError("This user has been banned for any reason", 403)
       );
- 
-    req.user.userObject = userObject;
+
+    req.user.userObject = objectModel;
+
+    return next();
   });
 
 // == == == == == == == == == == == == == == == == == == == ==
@@ -207,12 +201,13 @@ const existControl = (model) =>
 
     res.exist = objectModel;
 
-    next();
+    return next();
   });
 
 const adminAuthorityControl = (req, res, next) => {
   if (res.exist.stage >= req.user.stage)
     return next(new CustomError("Your authorization is not supported", 400));
+  return next()  
 };
 
 module.exports = {
