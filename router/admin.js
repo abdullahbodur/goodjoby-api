@@ -72,4 +72,6 @@ router.delete(
   deleteAdmin
 );
 
+// welcome
+
 module.exports = router;
