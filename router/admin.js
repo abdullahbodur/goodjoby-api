@@ -19,6 +19,8 @@ const {
   blockAdmin,
   deleteAdmin,
   cancelWork,
+  cancelRequest,
+  cancelPendingWork
 } = require("../controllers/admin");
 const Admin = require("../models/Admin");
 
@@ -51,11 +53,27 @@ router.post("/login", adminSignInHelper, loginAdmin);
 // ==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S
 
 
+// == == == == == == == == == == == == == == == == == == == ==
+//  CANCEL WORK
+// == == == == == == == == == == == == == == == == == == == ==
 
 
 router.put("/cancel_work",[adminTokenControl, adminStageControl([2, 4]), blockedControl(Admin)],cancelWork)
 
 
+// == == == == == == == == == == == == == == == == == == == ==
+//  CANCEL REQUEST
+// == == == == == == == == == == == == == == == == == == == ==
+
+
+router.put("/cancel_request",[adminTokenControl, adminStageControl([2, 4]), blockedControl(Admin)],cancelRequest)
+
+
+// == == == == == == == == == == == == == == == == == == == ==
+//  CANCEL PENDING WORK
+// == == == == == == == == == == == == == == == == == == == ==
+
+router.put("/cancel_pending_work",[adminTokenControl, adminStageControl([2, 4]), blockedControl(Admin)],cancelPendingWork)
 
 
 // ==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S

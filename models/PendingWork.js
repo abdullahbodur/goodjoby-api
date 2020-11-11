@@ -21,7 +21,7 @@ const PendingWorkSchema = new Schema({
   createdAt: {
     type: Date,
     default: Date.now,
-  }, 
+  },
   expireAt: {
     type: Date,
   },
@@ -31,7 +31,7 @@ const PendingWorkSchema = new Schema({
   },
 
   expert_requests: [{ type: mongoose.Schema.ObjectId, ref: "ExpertRequest" }],
-  
+
   answers: [
     {
       type: Number,
@@ -56,9 +56,6 @@ const PendingWorkSchema = new Schema({
     },
     default: 0,
   },
-
-
-
 });
 
 module.exports = mongoose.model("PendingWork", PendingWorkSchema);
