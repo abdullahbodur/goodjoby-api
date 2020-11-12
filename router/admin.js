@@ -20,7 +20,9 @@ const {
   deleteAdmin,
   cancelWork,
   cancelRequest,
-  cancelPendingWork
+  cancelPendingWork,
+  cancelJobApplication,
+  cancelJobAnnouncement
 } = require("../controllers/admin");
 const Admin = require("../models/Admin");
 
@@ -74,6 +76,25 @@ router.put("/cancel_request",[adminTokenControl, adminStageControl([2, 4]), bloc
 // == == == == == == == == == == == == == == == == == == == ==
 
 router.put("/cancel_pending_work",[adminTokenControl, adminStageControl([2, 4]), blockedControl(Admin)],cancelPendingWork)
+
+
+
+// == == == == == == == == == == == == == == == == == == == ==
+//  CANCEL JOB APPLICATION
+// == == == == == == == == == == == == == == == == == == == ==
+
+router.put("/cancel_job_application",[adminTokenControl, adminStageControl([2, 4]), blockedControl(Admin)],cancelJobApplication)
+
+
+
+// == == == == == == == == == == == == == == == == == == == ==
+//  CANCEL JOB ANNOUNCEMENT
+// == == == == == == == == == == == == == == == == == == == ==
+
+router.put("/cancel_job_announcement",[adminTokenControl, adminStageControl([2, 4]), blockedControl(Admin)],cancelJobAnnouncement)
+
+
+
 
 
 // ==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S

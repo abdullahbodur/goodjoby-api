@@ -9,6 +9,12 @@ const stateControl = (state) => {
       parseInt(STATE_CANCELED),
     ].includes(state)
   ) return true;
+
+  return false
 };
+
+
+
+
 
 module.exports = { stateControl };

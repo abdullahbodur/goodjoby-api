@@ -8,8 +8,9 @@ const PendingWork = require("../models/PendingWork");
 const {
   stateControl,
 } = require("../helpers/controlHelpers/adminControlHelper");
-const { populate } = require("../models/Work");
 
+const JobApplication = require("../models/JobApplication");
+const JobAnnouncement = require("../models/JobAnnouncement");
 // == == == == == == == == == == == == == == == == == == == ==
 //  CREATE NEW ADMIN
 // == == == == == == == == == == == == == == == == == == == ==
@@ -107,12 +108,9 @@ const cancelWork = errorHandlerWrapper(async (req, res, next) => {
   dataControl(work, next, "There is no Work with that id", 400);
 
   if (stateControl(work.state))
-  return next(
-    new CustomError(
-      "This Work already finished, canceled or passive",
-      400
-    )
-  );
+    return next(
+      new CustomError("This Work already finished, canceled or passive", 400)
+    );
 
   const defState = work.state;
 
@@ -166,12 +164,9 @@ const cancelRequest = errorHandlerWrapper(async (req, res, next) => {
   dataControl(expertRequest, next, "There is no Offer with that id", 400);
 
   if (stateControl(expertRequest.state))
-  return next(
-    new CustomError(
-      "This Offer already finished, canceled or passive",
-      400
-    )
-  );
+    return next(
+      new CustomError("This Offer already finished, canceled or passive", 400)
+    );
 
   const defState = expertRequest.state;
 
@@ -245,14 +240,7 @@ const cancelPendingWork = errorHandlerWrapper(async (req, res, next) => {
       let requestMailList = [];
 
       pendingWork.expert_requests.forEach((expertRequest) => {
-        if (
-          ![
-            parseInt(STATE_PASSIVE),
-            parseInt(STATE_FINISHED),
-            parseInt(STATE_CANCELED),
-          ].includes(expertRequest.state)
-        )
-          requestMailList.push(expertRequest.expert.email);
+        if (!stateControl(expertRequest.state)) requestMailList.push(expertRequest.expert.email);
       });
 
       const emailTemplate = `<h2>Your Requested Pending Work Canceled By Us</h2>
@@ -286,6 +274,161 @@ const cancelPendingWork = errorHandlerWrapper(async (req, res, next) => {
     .json({ success: true, message: "Pending Work Canceled Successfuly" });
 });
 
+// == == == == == == == == == == == == == == == == == == == ==
+//  CANCEL JOB APPLICATION
+// == == == == == == == == == == == == == == == == == == == ==
+
+const cancelJobApplication = errorHandlerWrapper(async (req, res, next) => {
+  const { application_id } = req.body;
+  const { STATE_CANCELED } = process.env;
+
+  dataControl(application_id, next, "Please provide an Application ID", 400);
+
+  const jobApplication = await JobApplication.findById(application_id).populate(
+    {
+      path: "expert",
+      select: "email name",
+    }
+  );
+
+  dataControl(
+    jobApplication,
+    next,
+    "There is no Job Application with that id",
+    400
+  );
+
+  if (stateControl(jobApplication.state))
+    return next(
+      new CustomError(
+        "This Job Application already finished, canceled or passive",
+        400
+      )
+    );
+
+  const defState = jobApplication.state;
+
+  try {
+    jobApplication.state = parseInt(STATE_CANCELED);
+    await jobApplication.save();
+
+    const emailTemplate = `<h2>Job Application Canceled By Us</h2>
+    <p>Hello ${jobApplication.expert.name},The Job Application with the code ${application_id} was closed by us. If something problem, contact us</p>`;
+
+    await sendMail({
+      from: process.env.SMTP_USER,
+      to: jobApplication.expert.email,
+      subject: "Job Application Canceled By Us",
+      html: emailTemplate,
+    });
+  } catch (error) {
+    jobApplication.state = defState;
+    await jobApplication.save();
+    return next(error);
+  }
+
+  res
+    .status(200)
+    .json({ success: true, message: "Job Application Cancelled successfuly" });
+});
+
+// == == == == == == == == == == == == == == == == == == == ==
+//  CANCEL JOB ANOUNCEMENT
+// == == == == == == == == == == == == == == == == == == == ==
+
+const cancelJobAnnouncement = errorHandlerWrapper(async (req, res, next) => {
+  const { job_announcement_id } = req.body;
+  const { STATE_CANCELED, STATE_PASSIVE, STATE_FINISHED } = process.env;
+
+  dataControl(
+    job_announcement_id,
+    next,
+    "Please provide an JOB ANNOUNCEMENT ID",
+    400
+  );
+
+  const jobAnnouncement = await JobAnnouncement.findById(job_announcement_id)
+    .populate([
+      {
+        path: "company",
+        select: "email name",
+      },
+      {
+        path: "job_applications.expert_id",
+        select: "email name -_id",
+      },
+      {
+        path: "job_applications.applicaton_id",
+        select: "state -_id",
+      },
+    ])
+    .select({
+      _id: 1,
+      company: 1,
+      "job_applications.expert_id": 1,
+      state: 1,
+    });
+
+  dataControl(
+    jobAnnouncement,
+    next,
+    "There is no Job Announcement with that id",
+    400
+  );
+
+  if (stateControl(jobAnnouncement.state))
+    return next(
+      new CustomError(
+        "This Job Announcement already finished, canceled or passive",
+        400
+      )
+    );
+
+  const defState = jobAnnouncement.state;
+
+  try {
+    jobAnnouncement.state = parseInt(STATE_CANCELED);
+    await jobAnnouncement.save();
+
+    if (jobAnnouncement.job_applications.length > 0) {
+      let applicationMailList = [];
+
+      jobAnnouncement.job_applications.forEach((application) => {
+        if (!stateControl(application.applicaton_id.state))
+          applicationMailList.push(application.expert_id.email);
+      });
+
+      const emailTemplate = `<h2>Your Applied Job Announcement Canceled By Us</h2>
+      <p>Hello !,\nThe Job Announcement with the code ${job_announcement_id} was closed by us. If something problem, contact us</p>`;
+
+      await sendMail({
+        from: process.env.SMTP_USER,
+        to: applicationMailList,
+        subject: "Your Applied Job Announcement Canceled By Us",
+        html: emailTemplate,
+      });
+    }
+
+    const emailTemplate = `<h2>Your Job Announcement Canceled By Us</h2>
+    <p>Hello ${jobAnnouncement.company.name},\nThe Job Announcement with the code ${job_announcement_id} was closed by us. If something problem, contact us</p>`;
+
+    await sendMail({
+      from: process.env.SMTP_USER,
+      to: jobAnnouncement.company.email,
+      subject: "Your Job Announcement Work Canceled By Us",
+      html: emailTemplate,
+    });
+  } catch (error) {
+    jobAnnouncement.state = defState;
+    await jobAnnouncement.save();
+    return next(error);
+  }
+
+  res
+    .status(200)
+    .json({ success: true, data: "Job Announcement Canceled Successfuly" });
+});
+
 module.exports = {
   createAdmin,
   loginAdmin,
@@ -296,4 +439,6 @@ module.exports = {
   cancelWork,
   cancelRequest,
   cancelPendingWork,
+  cancelJobApplication,
+  cancelJobAnnouncement,
 };
