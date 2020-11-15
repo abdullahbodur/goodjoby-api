@@ -197,7 +197,7 @@ const getAllPropWorks = (req, res, next) => {
 // == == == == == == == == == == == == == == == == == == == ==
 //  CREATE EXPERT REQUEST
 // == == == == == == == == == == == == == == == == == == == ==
- 
+
 const createExpertRequest = (req, res, next) => {
   res.status(200).json({ success: true, expertRequest: req.expertRequest });
 };
@@ -213,31 +213,63 @@ const cancelExpertRequest = (req, res, next) => {
   });
 };
 
-
 // == == == == == == == == == == == == == == == == == == == ==
 //  CANCEL WORK REQUEST - CLIENT
 // == == == == == == == == == == == == == == == == == == == ==
 
-
 const cancelWork = (req, res, next) => {
   res.status(200).json({
     success: true,
-    message : "Cancelling request successfuly, Please wait your expert response"
+    message: "Cancelling request successfuly, Please wait your expert response",
   });
 };
-
 
 // == == == == == == == == == == == == == == == == == == == ==
 //  CANCEL WORK ACCEPT - CLIENT
 // == == == == == == == == == == == == == == == == == == == ==
 
-
-const cancelWorkAccept = (req,res,next)=>{
+const cancelWorkAccept = (req, res, next) => {
   res.status(200).json({
     success: true,
     message: "You are successfuly canceled work",
   });
-}
+};
+
+// == == == == == == == == == == == == == == == == == == == ==
+//  GET ALL PROP JOB ANNOUNCEMENTS
+// == == == == == == == == == == == == == == == == == == == ==
+
+const getAllPropJobAnnouncements = async (req, res, next) => {
+  const user = req.user.userObject;
+  const { STATE_CREATED, STATE_ACTIVE } = process.env;
+
+  const jobAnnouncements = await JobAnnouncement.find({
+    aim_job: { $in: user.job.positions },
+    expireDate: { $gt: Date.now() },
+    state: { $in: [parseInt(STATE_CREATED), parseInt(STATE_ACTIVE)] },
+    is_accepted: false,
+  })
+    .select({
+      state: 0,
+      is_accepted: 0,
+      job_applications: 0,
+      __v: 0,
+    })
+    .populate([
+      {
+        path: "aim_job",
+        select: "job_name",
+      },
+      {
+        path: "company",
+        select: "name",
+      },
+    ]);
+
+  res.status(200).json({
+    jobAnnouncements: jobAnnouncements,
+  });
+};
 
 module.exports = {
   profileExpert,
@@ -257,5 +289,6 @@ module.exports = {
   createExpertRequest,
   cancelExpertRequest,
   cancelWorkAccept,
-  cancelWork
+  cancelWork,
+  getAllPropJobAnnouncements,
 };

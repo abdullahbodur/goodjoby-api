@@ -154,16 +154,13 @@ const forgotPassword = errorHandlerWrapper(
 
     const resetPasswordUrl = `http://${DOMAIN_URI}${PORT}/api/${name}/resetpassword?resetPasswordToken=${token}`;
 
-    console.log(resetPasswordUrl);
-    const emailTemplate = `<h2> Reset Your Password </h2> 
-<p> This <a href= '${resetPasswordUrl}' target='_blank'>link</a> will be expire in 1 hour </p>`;
 
     try {
       await sendMail({
         from: process.env.SMTP_USER,
         to: objectModel.email,
         subject: "Reset Password",
-        html: emailTemplate,
+        html: AuthTemplates.resetPassword(resetPasswordUrl),
       });
     } catch (error) {
       objectModel.token = undefined;

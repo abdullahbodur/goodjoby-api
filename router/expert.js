@@ -20,6 +20,7 @@ const {
   cancelExpertRequest,
   cancelWorkAccept,
   cancelWork,
+  getAllPropJobAnnouncements
 } = require("../controllers/expert");
 
 const {
@@ -106,6 +107,9 @@ router.get(
   getAllPropWorks
 );
 
+router.get("/get-all-prop-job-announcements",[tokenControl,tokenRoleControl("expert"),blockedControl(Expert)],getAllPropJobAnnouncements)
+
+
 // == == == == == == == == == == == == == == == == == == == ==
 //  POST REQUESTS
 // == == == == == == == == == == == == == == == == == == == ==
@@ -139,6 +143,8 @@ router.post(
   ],
   uploadedBIController
 );
+
+
 
 // == == == == == == == == == == == == == == == == == == == ==
 //  PUT ROUTES
