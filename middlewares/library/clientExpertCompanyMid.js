@@ -159,16 +159,6 @@ const cancelWrk = (isClient, modelName) =>
 
     console.log(resetPasswordUrl);
 
-    const emailTemplate = isClient
-      ? `<h2> Your Work Will Cancel! </h2>
-    <p> Your Client ${work.client.name} has been created a request about cancelling!
-    If you aware this happening, You have to click link which is in below.
-    Accept link :  <a href= '${resetPasswordUrl}' target='_blank'>HERE!</a> \n This link will expire an hour </p>`
-      : `<h2> Your Work Request Will Cancel! </h2>
-    <p> Your ${modelName} ${work.expert.name} has been created a request about cancelling!
-    If you aware this happening, You have to click link which is in below.
-    Accept link :  <a href= '${resetPasswordUrl}' target='_blank'>HERE!</a> \n This link will expire an hour </p>`;
-
     try {
       await sendMail({
         from: process.env.SMTP_USER,
@@ -176,7 +166,7 @@ const cancelWrk = (isClient, modelName) =>
         subject: isClient
           ? "Your Work Will Cancel!"
           : "Your Work Request Will Cancel!",
-        html: emailTemplate,
+        html: CetTemplates.cancelWork(isClient,work.client.name,resetPasswordUrl,modelName,work.expert.name),
       });
     } catch (error) {
       objectModel.cancel_token = undefined;
@@ -273,18 +263,13 @@ const upgradeFinishedPrcnt = () =>
       await work.save();
 
       const finishedWorkAcceptUrl = `http://${DOMAIN_URI}${PORT}/api/client/accept_finish_work/${work_id}?finishedWorkToken=${work.finished_token}`;
-
-      const emailTemplate = `<h2> Your Work Request Finished! </h2>
-    <p>${work.expert.name} has been finished your work!
-    If you are satisfied this service, You have to click link which is in below to accept to finish your work!.
-    Accept link :  <a href= '${finishedWorkAcceptUrl}' target='_blank'>HERE!</a> \n This link will expire an hour </p>`;
-
+      
       try {
         await sendMail({
           from: process.env.SMTP_USER,
           to: work.client.email,
           subject: "Your Work Has Been Finished!",
-          html: emailTemplate,
+          html: CetTemplates.upgradeWorkPercent(work.expert.name,finishedWorkAcceptUrl),
         });
       } catch (error) {
         objectModel.finished_token = undefined;

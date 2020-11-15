@@ -16,7 +16,7 @@ const JobAnnouncementSchema = new Schema({
     type: Date,
     default: Date.now,
   },
- 
+
   job_applications: [
     {
       applicaton_id: { type: mongoose.Schema.ObjectId, ref: "JobApplication" },
@@ -46,12 +46,11 @@ const JobAnnouncementSchema = new Schema({
     },
   },
 
-  aim_jobs: [
-    {
-      type: mongoose.Schema.ObjectId,
-      ref: "JobInfo",
-    },
-  ],
+  aim_job: {
+    type: mongoose.Schema.ObjectId,
+    ref: "JobInfo",
+  },
+
   expireDate: {
     type: Date,
     required: [true, "Please provide a last date for your announcement"],
