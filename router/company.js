@@ -21,6 +21,7 @@ const {
   cancelWork,
   cancelWorkAccept,
   upgradeFinishedPercent,
+  cancelJobAnnouncement,
 } = require("../controllers/company");
 
 const {
@@ -40,7 +41,7 @@ const {
   blockedControl,
 } = require("../middlewares/tokenControls/tokenControls");
 
-const { 
+const {
   crExpertRequest,
   cancelWrk,
   cancelWrkAccept,
@@ -170,14 +171,20 @@ router.put(
 );
 
 router.put(
-  "/accept_job_application/:announcement_id",
-  [tokenControl, tokenRoleControl("company")],
-  acceptJobApplication
+  "/cancel_job_announcement",
+  [tokenControl, tokenRoleControl("company"), blockedControl(Company)],
+  cancelJobAnnouncement
 );
 
 // == == == == == == == == == == == == == == == == == == == ==
 //  PARAM ROUTES
 // == == == == == == == == == == == == == == == == == == == ==
+
+router.put(
+  "/accept_job_application/:announcement_id",
+  [tokenControl, tokenRoleControl("company")],
+  acceptJobApplication
+);
 
 router.put(
   "/upgrade_finished_percent/:work_id",
