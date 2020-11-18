@@ -5,6 +5,9 @@ const CustomError = require("../helpers/error/CustomError");
 const JobApplication = require("../models/JobApplication");
 const JobAnnouncement = require("../models/JobAnnouncement");
 const { application } = require("express");
+const { dataControl } = require("../helpers/database/databaseControl");
+const { populate } = require("../models/Company");
+const sendMail = require("../helpers/libraries/sendMail");
 
 // == == == == == == == == == == == == == == == == == == == ==
 //  REGISTER COMPANY CONTROLLER
@@ -224,7 +227,7 @@ const acceptJobApplication = errorHandlerWrapper(async (req, res, next) => {
   res.status(200).json({
     success: true,
     message: "Accepted successfuly",
-  }); 
+  });
 });
 
 // == == == == == == == == == == == == == == == == == == == ==
@@ -273,44 +276,103 @@ const createExpertRequest = errorHandlerWrapper(async (req, res, next) => {
 //  CANCEL WORK REQUEST - CLIENT
 // == == == == == == == == == == == == == == == == == == == ==
 
-
 const cancelWork = (req, res, next) => {
   res.status(200).json({
     success: true,
-    message : "Cancelling request successfuly, Please wait your expert response"
+    message: "Cancelling request successfuly, Please wait your expert response",
   });
 };
-
 
 // == == == == == == == == == == == == == == == == == == == ==
 //  CANCEL WORK ACCEPT - COMPANY
 // == == == == == == == == == == == == == == == == == == == ==
 
-
-const cancelWorkAccept = (req,res,next)=>{
+const cancelWorkAccept = (req, res, next) => {
   res.status(200).json({
     success: true,
     message: "You are successfuly canceled work",
   });
-}
-
+};
 
 // == == == == == == == == == == == == == == == == == == == ==
 //  UPGRADE FINISHED PERCENT - COMPANY
 // == == == == == == == == == == == == == == == == == == == ==
 
-
-const upgradeFinishedPercent = (req,res,next)=>{
+const upgradeFinishedPercent = (req, res, next) => {
   res.status(200).json({
     success: true,
     message: "You are upgraded finished percent successfuly",
-    data : req.work
+    data: req.work,
   });
-}
+};
 
+// == == == == == == == == == == == == == == == == == == == ==
+//  CANCEL JOB ANNOUNCEMENT
+// == == == == == == == == == == == == == == == == == == == ==
 
+const cancelJobAnnouncement = async (req, res, next) => {
+  const { announcement_id } = req.body;
+  const { STATE_ACTIVE, STATE_CREATED, STATE_CANCELED } = process.env;
+  dataControl(announcement_id, next, "Please provide an Announcement ID", 400);
 
+  const jobAnouncement = await JobAnnouncement.findOne({
+    _id: announcement_id,
+    is_accepted: false,
+    state: { $in: [parseInt(STATE_ACTIVE), parseInt(STATE_CREATED)] },
+    expireDate: { $gt: Date.now() },
+  })
+    .select({
+      job_applications: 1,
+    })
+    .populate([
+      {
+        path: "job_applications",
+        select: "_id ",
+        populate: [
+          {
+            path: "expert_id",
+            select: "name email",
+          },
+          {
+            path: "applicaton_id",
+            select: "state",
+          },
+        ],
+      },
+    ]);
 
+  dataControl(jobAnouncement, next, "Job Announcement could not find", 400);
+
+  const defState = jobAnouncement.state;
+
+  try {
+    jobAnouncement.state = parseInt(STATE_CANCELED);
+    await jobAnouncement.save();
+
+    if (jobAnouncement.job_applications.length > 0) {
+      let applicationMailList = [];
+
+      jobAnouncement.job_applications.forEach((jobApplication) => {
+        if (!stateControl(jobApplication.applicaton_id.state))
+          applicationMailList.push(job_applications.expert_id.email);
+      });
+
+      await sendMail({
+        from: process.env.SMTP_USER,
+        to: applicationMailList,
+        subject: "Your Applied Job Announcement Canceled By Company",
+        html: CetTemplates.cancelJobAnnouncement(announcement_id),
+      });
+    }
+  } catch (error) {
+    jobAnouncement.state = defState;
+    await jobAnouncement.save();
+    return next(error);
+  }
+  res
+    .status(200)
+    .json({ success: true, message: "Announcement canceled successfuly" });
+};
 
 module.exports = {
   registerCompany,
@@ -332,5 +394,6 @@ module.exports = {
   createExpertRequest,
   cancelWork,
   cancelWorkAccept,
-  upgradeFinishedPercent
+  upgradeFinishedPercent,
+  cancelJobAnnouncement,
 };
