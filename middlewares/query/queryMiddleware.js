@@ -28,7 +28,7 @@ const queryMiddlware = function (model, searchField, options,field) {
 
     const total = await model.countDocuments();
 
-    resultPagenation = await usePagination(req, query, false, total);
+    resultPagenation =  usePagination(req, query, false, total);
 
     query = resultPagenation.query;
 

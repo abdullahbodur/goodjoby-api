@@ -1,5 +1,3 @@
-
-
 const usePopulation = (query, population) => {
   return query.populate(population);
 };
@@ -10,7 +8,7 @@ const searchControl = (req, query, controlSpace) => {
     const regex = new RegExp(req.query.search, "i");
 
     queryObj[controlSpace] = regex;
-    return query.where(queryObj); 
+    return query.where(queryObj);
   }
 
   return query;
@@ -24,15 +22,15 @@ const useSorting = (req, query, sortingField) => {
   return query;
 };
 
-const usePagination = async (req, query, isIndexing, total) => {
+const usePagination = (req, query, isIndexing, total) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 5;
 
   const startIndex = (page - 1) * limit;
   const lastOne = page * limit;
-
+  const pagenation = {};
+  
   if (isIndexing) {
-    const pagenation = {};
     if (startIndex > 0) {
       pagenation.previous = {
         previous_page: page - 1,
@@ -56,18 +54,15 @@ const usePagination = async (req, query, isIndexing, total) => {
 };
 
 const useSelectField = (query, field) => {
-
-  if(field)return query.select(field)
+  if (field) return query.select(field);
 
   return query;
 };
-
-
 
 module.exports = {
   usePagination,
   usePopulation,
   searchControl,
   useSorting,
-  useSelectField
+  useSelectField,
 };
