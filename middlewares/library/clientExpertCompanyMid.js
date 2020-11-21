@@ -7,7 +7,7 @@ const {
   getTokenForAnyPurpose,
 } = require("../../helpers/modelHelpers/modelHelper");
 const sendMail = require("../../helpers/libraries/sendMail");
-const Expert = require("../../models/Expert");
+const { dataControl } = require("../../helpers/database/databaseControl");
 
 // == == == == == == == == == == == == == == == == == == == ==
 //  CREATE  OFFER - COMPANY - EXPERT
@@ -21,26 +21,26 @@ const crExpertRequest = (isCompany) =>
       "expert_requests"
     );
 
-    if (!pendingWork) {
-      return next(new CustomError("There is no work with that id", 400));
-    }
+    dataControl(pendingWork, next, "There is no work with that id", 400);
 
     // IF Expert has this service control
 
     if (!req.user.userObject.job.positions.includes(pendingWork.service_id)) {
-      return next(new CustomError("Authorization is invalid", 403));
+      return next(
+        new CustomError("Your services do not match this pending work", 403)
+      );
     }
 
     if (
       pendingWork.expert_requests.length > 0 &&
       pendingWork.expert_requests.filter(
         (e) =>
-          e.expert == req.user.id ||
-          e.is_company == (req.user.userObject.role === "company" ? true : false)
-      )
-    ) {
+          e.expert == req.user.id &&
+          e.is_company ==
+            (req.user.userObject.role === "company" ? true : false)
+      ).length > 0
+    )
       return next(new CustomError("You are already offer this work", 400));
-    }
 
     const expertRequest = await ExpertRequest.create({
       ...data,
@@ -84,25 +84,24 @@ const crExpertRequest = (isCompany) =>
 const clExpertRequest = errorHandlerWrapper(async (req, res, next) => {
   const { req_id } = req.params;
 
+  const { STATE_CREATED, STATE_ACTIVE, STATE_CANCELED } = process.env;
 
   const expertRequest = await ExpertRequest.findById(req_id);
 
-  if (!expertRequest) {
-    return next(new CustomError("There is no offer with that id", 400));
-  }
+  dataControl(expertRequest, next, "There is no offer with that id", 400);
 
   if (
-    expertRequest.state !==
-    (parseInt(process.env.STATE_CREATED) || parseInt(process.env.STATE_ACTIVE))
-  ) { 
+    ![parseInt(STATE_ACTIVE), parseInt(STATE_CREATED)].includes(
+      expertRequest.state
+    )
+  )
     return next(new CustomError("This offer already succed or canceled"));
-  }
 
   try {
-    expertRequest.state = parseInt(process.env.STATE_CANCELED);
+    expertRequest.state = parseInt(STATE_CANCELED);
     expertRequest.save();
   } catch (error) {
-    expertRequest.state = parseInt(process.env.STATE_CREATED);
+    expertRequest.state = parseInt(STATE_CREATED);
     expertRequest.save();
     return next(error);
   }
@@ -166,18 +165,22 @@ const cancelWrk = (isClient, modelName) =>
         subject: isClient
           ? "Your Work Will Cancel!"
           : "Your Work Request Will Cancel!",
-        html: CetTemplates.cancelWork(isClient,work.client.name,resetPasswordUrl,modelName,work.expert.name),
+        html: CetTemplates.cancelWork(
+          isClient,
+          work.client.name,
+          resetPasswordUrl,
+          modelName,
+          work.expert.name
+        ),
       });
     } catch (error) {
-      objectModel.cancel_token = undefined;
-      objectModel.cancel_token_expire = undefined;
+      work.cancel_token = undefined;
+      work.cancel_token_expire = undefined;
 
-      await objectModel.save();
+      await work.save();
 
       return next(new CustomError("Email could not send to client", 500));
     }
-
-    console.log(work);
     next();
   });
 
@@ -216,6 +219,10 @@ const cancelWrkAccept = errorHandlerWrapper(async (req, res, next) => {
 
   next();
 });
+
+// == == == == == == == == == == == == == == == == == == == ==
+//  UPGRADE - FINISIHED - PERCENT - COMPANY - EXPERT
+// == == == == == == == == == == == == == == == == == == == ==
 
 const upgradeFinishedPrcnt = () =>
   errorHandlerWrapper(async (req, res, next) => {
@@ -263,19 +270,22 @@ const upgradeFinishedPrcnt = () =>
       await work.save();
 
       const finishedWorkAcceptUrl = `http://${DOMAIN_URI}${PORT}/api/client/accept_finish_work/${work_id}?finishedWorkToken=${work.finished_token}`;
-      
+
       try {
         await sendMail({
           from: process.env.SMTP_USER,
           to: work.client.email,
           subject: "Your Work Has Been Finished!",
-          html: CetTemplates.upgradeWorkPercent(work.expert.name,finishedWorkAcceptUrl),
+          html: CetTemplates.upgradeWorkPercent(
+            work.expert.name,
+            finishedWorkAcceptUrl
+          ),
         });
       } catch (error) {
-        objectModel.finished_token = undefined;
-        objectModel.finished_token_expire = undefined;
+        work.finished_token = undefined;
+        work.finished_token_expire = undefined;
 
-        await objectModel.save();
+        await work.save();
 
         return next(new CustomError("Email could not send to client", 500));
       }

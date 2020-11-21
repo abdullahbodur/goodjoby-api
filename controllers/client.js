@@ -4,11 +4,11 @@ const Client = require("../models/Client");
 const JobInfo = require("../models/JobInfo");
 const PendingWork = require("../models/PendingWork");
 const ExpertRequest = require("../models/ExpertRequest");
-const Work = require("../models/Work"); 
+const Work = require("../models/Work");
 const Expert = require("../models/Expert");
 const Company = require("../models/Company");
 
-const path = require('path');
+const path = require("path");
 // == == == == == == == == == == == == == == == == == == == ==
 //  REGISTER CLIENT CONTROLLER
 // == == == == == == == == == == == == == == == == == == == ==
@@ -204,43 +204,32 @@ const uploadNewDocuments = errorHandlerWrapper(async (req, res, next) => {
 const acceptAnyOffer = errorHandlerWrapper(async (req, res, next) => {
   const offerID = req.params.offer_id;
   const { pending_work_id, expireAt } = req.body;
-
+  const {STATE_CREATED,STATE_ACTIVE,STATE_FINISHED,STATE_PASSIVE} = process.env
   if (!expireAt)
     return next(
       new CustomError("Please provide a expire time for your work", 400)
     );
 
-
-  
   // find expert offer and pending work
-  const expertRequest = await ExpertRequest.findOne(
-    {
-      _id: offerID,
-      state: {
-        $nin: [
-          parseInt(process.env.STATE_CANCELED),
-          parseInt(process.env.STATE_PASSIVE),
-        ],
-      },
+  const expertRequest = await ExpertRequest.findOne({
+    _id: offerID,
+    state: {
+      $in: [
+        parseInt(STATE_CREATED),
+        parseInt(STATE_ACTIVE),
+      ],
     },
+  });
 
-  );
-
-
-
-  const pendingWork = await PendingWork.findOne(
-    {
-      _id: pending_work_id,
-      state: {
-        $nin: [
-          parseInt(process.env.STATE_CANCELED),
-          parseInt(process.env.STATE_PASSIVE),
-        ],
-      },
-    }
-  );
-
-
+  const pendingWork = await PendingWork.findOne({
+    _id: pending_work_id,
+    state: {
+      $in: [
+        parseInt(STATE_CREATED),
+        parseInt(STATE_ACTIVE),
+      ],
+    },
+  });
 
   if (!expertRequest || !pendingWork)
     return next(
@@ -250,40 +239,37 @@ const acceptAnyOffer = errorHandlerWrapper(async (req, res, next) => {
       )
     );
 
-    try {
-      expertRequest.is_accepted = true,
-      expertRequest.state = parseInt(process.env.STATE_FINISHED);
+  try {
+    (expertRequest.is_accepted = true),
+      (expertRequest.state = parseInt(STATE_FINISHED));
 
-      pendingWork.is_accepted = true,
-      pendingWork.state = parseInt(process.env.STATE_FINISHED);
+    (pendingWork.is_accepted = true),
+      (pendingWork.state = parseInt(STATE_FINISHED));
 
-      await expertRequest.save();
-      await pendingWork.save();
+    await expertRequest.save();
+    await pendingWork.save();
 
-      await ExpertRequest.updateMany(
-        {
-          $and: [
-            { pending_work_id: pendingWork._id },
-            { _id: { $ne: expertRequest._id } },
-          ],
-        },
-        { $set: { state: parseInt(process.env.STATE_PASSIVE) } }
-      ); 
+    await ExpertRequest.updateMany(
+      {
+        $and: [
+          { pending_work_id: pendingWork._id },
+          { _id: { $ne: expertRequest._id } },
+        ],
+      },
+      { $set: { state: parseInt(STATE_PASSIVE) } }
+    );
+  } catch (error) {
+    (expertRequest.is_accepted = false),
+      (expertRequest.state = parseInt(STATE_CREATED));
 
-    } catch (error) {
-      expertRequest.is_accepted = false,
-      expertRequest.state = parseInt(process.env.STATE_CREATED);
+    (pendingWork.is_accepted = false),
+      (pendingWork.state = parseInt(STATE_CREATED));
 
-      pendingWork.is_accepted = false,
-      pendingWork.state = parseInt(process.env.STATE_CREATED);
+    await expertRequest.save();
+    await pendingWork.save();
 
-      await expertRequest.save();
-      await pendingWork.save();
-
-      return next(error)
-    }
-
-
+    return next(error);
+  }
 
   // create new work after pendingwork state = 3
 
@@ -302,14 +288,11 @@ const acceptAnyOffer = errorHandlerWrapper(async (req, res, next) => {
 
   // find client and expert
 
-
-  const model  = expertRequest.is_company ? Company : Expert;  
+  const model = expertRequest.is_company ? Company : Expert;
 
   const client = await Client.findById(req.user.id);
 
-  const expert = await model.findById(
-    expertRequest.expert
-  );
+  const expert = await model.findById(expertRequest.expert);
 
   if (!client || !expert)
     return next(new CustomError("There is no client o user with that id", 400));
@@ -317,22 +300,20 @@ const acceptAnyOffer = errorHandlerWrapper(async (req, res, next) => {
   // save this work id to client and expert
 
   try {
-    
     client.works.push(work._id);
     expert.works.push(work._id);
 
     await client.save();
     await expert.save();
-
   } catch (error) {
     client.works.splice(client.works.indexOf(work._id), 1);
     expert.works.splice(client.works.indexOf(work._id), 1);
 
     expertRequest.is_accepted = false;
-    expertRequest.state = parseInt(process.env.STATE_CREATED);
+    expertRequest.state = parseInt(STATE_CREATED);
 
     pendingWork.is_accepted = false;
-    pendingWork.state = parseInt(process.env.STATE_CREATED);
+    pendingWork.state = parseInt(STATE_CREATED);
 
     await expertRequest.save();
     await pendingWork.save();
@@ -381,7 +362,8 @@ const cancelAnyPendingWork = errorHandlerWrapper(async (req, res, next) => {
     await pendingWork.save();
     await ExpertRequest.updateMany(
       { pending_work_id: pendingWork._id },
-      { $set: { state: parseInt(process.env.STATE_CANCELED) } }
+      { $set: { state: parseInt(process.env.STATE_CANCELED) } },
+      { runValidators: true }
     );
   } catch (error) {
     pendingWork.state = parseInt(process.env.STATE_CREATED);
@@ -422,7 +404,6 @@ const cancelWorkAccept = (req, res, next) => {
   });
 };
 
-
 // == == == == == == == == == == == == == == == == == == == ==
 //  GET WORKS - CLIENT
 // == == == == == == == == == == == == == == == == == == == ==
@@ -431,16 +412,13 @@ const getWorks = (req, res, next) => {
   res.status(200).json(res.result);
 };
 
-
-
-
 // == == == == == == == == == == == == == == == == == == == ==
 //  GET MESSAGES- CLIENT
 // == == == == == == == == == == == == == == == == == == == ==
 
 const getMessages = (req, res, next) => {
   // let socket = require('socket.io-client')('http://localhost:1234');
-  
+
   // socket.on('connect', function(m){
   //   console.log(m);
   // });
@@ -457,14 +435,11 @@ const getMessages = (req, res, next) => {
   //   console.log(msg);
   // })
 
-  
   // 5f9c879976bb8910b622f64d
   // client
 
-  res.status(200).sendFile(path.join(__dirname,'../public/index.html'))
-  
+  res.status(200).sendFile(path.join(__dirname, "../public/index.html"));
 };
-
 
 module.exports = {
   profileClient,
@@ -485,5 +460,5 @@ module.exports = {
   cancelWork,
   cancelWorkAccept,
   getWorks,
-  getMessages
+  getMessages,
 };

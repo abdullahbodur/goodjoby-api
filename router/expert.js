@@ -20,7 +20,8 @@ const {
   cancelExpertRequest,
   cancelWorkAccept,
   cancelWork,
-  getAllPropJobAnnouncements
+  getAllPropJobAnnouncements,
+  cancelJobApplication,
 } = require("../controllers/expert");
 
 const {
@@ -46,7 +47,11 @@ const {
   cancelWrkAccept,
   cancelWrk,
 } = require("../middlewares/library/clientExpertCompanyMid");
-const propWorks = require("../middlewares/query/propWorksMiddleware");
+const {
+  propWorks,
+  getRequestedWorks,
+  getAllWorks,
+} = require("../middlewares/query/cetWorksQuery");
 const queryMiddleware = require("../middlewares/query/queryMiddleware");
 const uploadFile = require("../helpers/libraries/uploadFile");
 const dataControl = require("../middlewares/tokenControls/dataControl");
@@ -107,9 +112,24 @@ router.get(
   getAllPropWorks
 );
 
-router.get("/get-all-prop-job-announcements",[tokenControl,tokenRoleControl("expert"),blockedControl(Expert)],getAllPropJobAnnouncements)
+router.get(
+  "/get-all-prop-job-announcements",
+  [tokenControl, tokenRoleControl("expert"), blockedControl(Expert)],
+  getAllPropJobAnnouncements
+);
 
+router.get("/get_all_requested_works", [
+  tokenControl,
+  tokenRoleControl("expert"),
+  blockedControl(Expert),
+  getRequestedWorks,
+]);
 
+router.get("/get-all-works", [
+  tokenControl,
+  tokenRoleControl("expert"),
+  getAllWorks,
+]);
 // == == == == == == == == == == == == == == == == == == == ==
 //  POST REQUESTS
 // == == == == == == == == == == == == == == == == == == == ==
@@ -144,8 +164,6 @@ router.post(
   uploadedBIController
 );
 
-
-
 // == == == == == == == == == == == == == == == == == == == ==
 //  PUT ROUTES
 // == == == == == == == == == == == == == == == == == == == ==
@@ -154,6 +172,12 @@ router.put(
   "/add_new_jobs",
   [tokenControl, tokenRoleControl("expert"), blockedControl(Expert)],
   addNewJobs
+);
+
+router.put(
+  "/cancel_job_application",
+  [tokenControl, tokenRoleControl("expert"), blockedControl(Expert)],
+  cancelJobApplication
 );
 
 // == == == == == == == == == == == == == == == == == == == ==
@@ -173,7 +197,7 @@ router.put(
 
 router.get("/cancel_work_accept/:work_id", cancelWrkAccept, cancelWorkAccept);
 
-router.get(
+router.put(
   "/cancel_expert_request/:req_id",
   [
     tokenControl,
@@ -218,7 +242,7 @@ router.post(
 );
 
 router.get(
-  "/:username", 
+  "/:username",
   [profileTokenControl, profileOwnerAccess()],
   profileExpert
 );

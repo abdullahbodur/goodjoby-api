@@ -261,7 +261,11 @@ const getSearchSubJob = (req, res, next) => {
 // == == == == == == == == == == == == == == == == == == == ==
 
 const getAllPropWorks = errorHandlerWrapper(async (req, res, next) => {
-  res.status(200).json({ success: true, data: req.propWorks });
+  res.status(200).json({
+    success: true,
+    data: req.propWorks,
+    positionStatus: req.positionStatus,
+  });
 });
 
 // == == == == == == == == == == == == == == == == == == == ==
@@ -374,6 +378,17 @@ const cancelJobAnnouncement = async (req, res, next) => {
     .json({ success: true, message: "Announcement canceled successfuly" });
 };
 
+// == == == == == == == == == == == == == == == == == == == ==
+//  CANCEL EXPERT REQUEST
+// == == == == == == == == == == == == == == == == == == == ==
+
+const cancelExpertRequest = (req, res, next) => {
+  res.status(200).json({
+    success: true,
+    message: "You are successfuly canceled your offer",
+  });
+};
+
 module.exports = {
   registerCompany,
   signCompany,
@@ -396,4 +411,5 @@ module.exports = {
   cancelWorkAccept,
   upgradeFinishedPercent,
   cancelJobAnnouncement,
+  cancelExpertRequest,
 };

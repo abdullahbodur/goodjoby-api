@@ -1,4 +1,5 @@
 const errorHandlerWrapper = require("express-async-handler");
+const { dataControl } = require("../helpers/database/databaseControl");
 const CustomError = require("../helpers/error/CustomError");
 const Expert = require("../models/Expert");
 const JobAnnouncement = require("../models/JobAnnouncement");
@@ -271,6 +272,33 @@ const getAllPropJobAnnouncements = async (req, res, next) => {
   });
 };
 
+// == == == == == == == == == == == == == == == == == == == ==
+//  CANCEL JOB APPLICATION
+// == == == == == == == == == == == == == == == == == == == ==
+
+const cancelJobApplication = errorHandlerWrapper(async (req, res, next) => {
+  const { application_id } = req.body;
+  const { STATE_ACTIVE, STATE_CREATED, STATE_CANCELED } = process.env;
+  dataControl(application_id, next, "Please provide an Application ID", 400);
+
+  const jobApplication = await JobApplication.findOne({
+    _id: application_id,
+    expert: req.user.userObject._id,
+    state: { $in: [parseInt(STATE_CREATED), parseInt(STATE_ACTIVE)] },
+  }).select({ _id: 1, state: 1 });
+
+  dataControl(jobApplication, next, "Job Applcation is not found", 400);
+ 
+  jobApplication.state = parseInt(STATE_CANCELED);
+  await jobApplication.save();
+
+  res.status(200).json({
+    success: true,
+    message : "Job Application canceled successfuly",
+    data: jobApplication,
+  });
+});
+ 
 module.exports = {
   profileExpert,
   logoutExpert,
@@ -291,4 +319,5 @@ module.exports = {
   cancelWorkAccept,
   cancelWork,
   getAllPropJobAnnouncements,
+  cancelJobApplication,
 };

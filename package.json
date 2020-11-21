@@ -1,6 +1,6 @@
 {
   "name": "goodjoby-api",
-  "version": "1.0.0", 
+  "version": "1.0.0",
   "description": "GoodJoby Api for GoodJoby services",
   "main": "index.js",
   "scripts": {
@@ -9,7 +9,7 @@
     "run": "node index.js"
   },
   "author": "bodursoft",
-  "license": "ISC", 
+  "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "crypto": "^1.0.1",

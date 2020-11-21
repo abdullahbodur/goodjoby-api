@@ -22,6 +22,7 @@ const {
   cancelWorkAccept,
   upgradeFinishedPercent,
   cancelJobAnnouncement,
+  cancelExpertRequest,
 } = require("../controllers/company");
 
 const {
@@ -44,10 +45,16 @@ const {
 const {
   crExpertRequest,
   cancelWrk,
+  clExpertRequest,
   cancelWrkAccept,
   upgradeFinishedPrcnt,
 } = require("../middlewares/library/clientExpertCompanyMid");
-const propWorks = require("../middlewares/query/propWorksMiddleware");
+const {
+  propWorks,
+  getRequestedWorks,
+  getAllWorks,
+} = require("../middlewares/query/cetWorksQuery");
+
 const dataControl = require("../middlewares/tokenControls/dataControl");
 const queryMiddleware = require("../middlewares/query/queryMiddleware");
 const uploadFile = require("../helpers/libraries/uploadFile");
@@ -100,6 +107,19 @@ router.get(
   ],
   getAllPropWorks
 );
+
+router.get("/get_all_requested_works", [
+  tokenControl,
+  tokenRoleControl("company"),
+  blockedControl(Company),
+  getRequestedWorks,
+]);
+
+router.get("/get-all-works", [
+  tokenControl,
+  tokenRoleControl("company"),
+  getAllWorks,
+]);
 
 // == == == == == == == == == == == == == == == == == == == ==
 //  POST REQUESTS
@@ -210,6 +230,12 @@ router.post(
   ],
   createExpertRequest
 );
+
+router.put("/cancel_expert_request/:req_id", [
+  tokenControl,
+  [tokenRoleControl("company"), blockedControl(Company), clExpertRequest],
+  cancelExpertRequest,
+]);
 
 router.get(
   "/:username",

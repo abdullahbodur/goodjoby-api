@@ -6,7 +6,7 @@ const {
 const Schema = mongoose.Schema;
  
 const ClientSchema = new Schema({
-  username: {
+  username: { 
     type: String,
     required: [true, "Please provide an username for account"],
     unique: [true, "This username is already taken"],
