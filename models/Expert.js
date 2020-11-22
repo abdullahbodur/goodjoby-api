@@ -15,7 +15,7 @@ const ExpertSchema = new Schema({
       /^[a-zA-Z0-9]+$/,
       "Username must includes number (0-9), capital (A-Z), lower (a-z)",
     ],
-  }, 
+  },
   name: {
     type: String,
     required: [true, "Please provide a name"],
@@ -77,12 +77,12 @@ const ExpertSchema = new Schema({
     default: 0,
   },
 
-  company_id: { type: mongoose.Schema.ObjectId, ref: "Company" },
+  team_id: { type: mongoose.Schema.ObjectId, ref: "Team" },
 
   role: {
     type: String,
     default: "expert",
-    enum: ["client", "expert", "company", "admin"],
+    enum: ["client", "expert", "team", "admin"],
   },
 
   token: {

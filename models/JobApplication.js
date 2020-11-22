@@ -2,7 +2,6 @@ const mongoose = require("mongoose");
 const CustomError = require("../helpers/error/CustomError");
 const JobAnnouncement = require("./JobAnnouncement");
 
-
 const Schema = mongoose.Schema;
 
 const JobApplicationSchema = new Schema({
@@ -17,11 +16,11 @@ const JobApplicationSchema = new Schema({
   expert: {
     type: mongoose.Schema.ObjectId,
     ref: "Expert",
-  }, 
-  company: {
+  },
+  team: {
     type: mongoose.Schema.ObjectId,
-    ref: "Company",
-    required: [true, "Please provide a company"],
+    ref: "Team",
+    required: [true, "Please provide a team"],
   },
 
   job_announcement_id: {
@@ -91,10 +90,13 @@ JobApplicationSchema.pre("save", async function (next) {
     if (!jobAnnouncement) {
       throw new CustomError("There is no Job Announcement with that id", 400);
     }
-    
-    if(jobAnnouncement.job_applications.some(e => e.expert_id.toString() === this.expert.toString()))
-      throw new CustomError("You are already applied this Announcement", 400);
 
+    if (
+      jobAnnouncement.job_applications.some(
+        (e) => e.expert_id.toString() === this.expert.toString()
+      )
+    )
+      throw new CustomError("You are already applied this Announcement", 400);
 
     jobAnnouncement.job_applications.push({
       applicaton_id: this._id,

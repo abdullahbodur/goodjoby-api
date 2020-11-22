@@ -6,7 +6,7 @@ const PendingWork = require("../models/PendingWork");
 const ExpertRequest = require("../models/ExpertRequest");
 const Work = require("../models/Work");
 const Expert = require("../models/Expert");
-const Company = require("../models/Company");
+const Team = require("../models/Team");
 
 const path = require("path");
 // == == == == == == == == == == == == == == == == == == == ==
@@ -176,7 +176,7 @@ const uploadNewDocuments = errorHandlerWrapper(async (req, res, next) => {
   const { id } = req.params;
   const pendingWork = await PendingWork.findById(id);
 
-  if (req.user.id != pendingWork.client) {
+  if (req.user.client_id != pendingWork.client) {
     return next(new CustomError("You authorize is invalid", 403));
   }
 
@@ -204,7 +204,12 @@ const uploadNewDocuments = errorHandlerWrapper(async (req, res, next) => {
 const acceptAnyOffer = errorHandlerWrapper(async (req, res, next) => {
   const offerID = req.params.offer_id;
   const { pending_work_id, expireAt } = req.body;
-  const {STATE_CREATED,STATE_ACTIVE,STATE_FINISHED,STATE_PASSIVE} = process.env
+  const {
+    STATE_CREATED,
+    STATE_ACTIVE,
+    STATE_FINISHED,
+    STATE_PASSIVE,
+  } = process.env;
   if (!expireAt)
     return next(
       new CustomError("Please provide a expire time for your work", 400)
@@ -214,20 +219,14 @@ const acceptAnyOffer = errorHandlerWrapper(async (req, res, next) => {
   const expertRequest = await ExpertRequest.findOne({
     _id: offerID,
     state: {
-      $in: [
-        parseInt(STATE_CREATED),
-        parseInt(STATE_ACTIVE),
-      ],
+      $in: [parseInt(STATE_CREATED), parseInt(STATE_ACTIVE)],
     },
   });
 
   const pendingWork = await PendingWork.findOne({
     _id: pending_work_id,
     state: {
-      $in: [
-        parseInt(STATE_CREATED),
-        parseInt(STATE_ACTIVE),
-      ],
+      $in: [parseInt(STATE_CREATED), parseInt(STATE_ACTIVE)],
     },
   });
 
@@ -279,18 +278,18 @@ const acceptAnyOffer = errorHandlerWrapper(async (req, res, next) => {
     documents: pendingWork.documents,
     service_id: pendingWork.service_id,
     expert: expertRequest.expert,
-    expert_type: expertRequest.is_company ? "Company" : "Expert",
+    expert_type: expertRequest.is_team ? "Team" : "Expert",
     messages: expertRequest.messages ? expertRequest.messages : [],
     answers: pendingWork.answers,
-    is_company: expertRequest.is_company,
+    is_team: expertRequest.is_team,
     expireAt: new Date(Date.now() + parseInt(expireAt)),
   });
 
   // find client and expert
 
-  const model = expertRequest.is_company ? Company : Expert;
+  const model = expertRequest.is_team ? Team : Expert;
 
-  const client = await Client.findById(req.user.id);
+  const client = await Client.findById(req.user.client_id);
 
   const expert = await model.findById(expertRequest.expert);
 
@@ -424,8 +423,8 @@ const getMessages = (req, res, next) => {
   // });
 
   // socket.emit("sendIdRole",{
-  //   id : req.user.id,
-  //   role : req.user.role
+  //   id : req.user.client_id,
+  //   role : goodjoby_ob
   // })
 
   // socket.on('event', function(data){});

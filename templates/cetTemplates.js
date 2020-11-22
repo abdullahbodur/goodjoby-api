@@ -25,8 +25,8 @@ class CetTemplates {
   }
 
   static cancelJobAnnouncement(job_announcement_id) {
-    return `<h2> Your Applied Job Announcement Canceled By Company! </h2>
+    return `<h2> Your Applied Job Announcement Canceled By Team! </h2>
     <p>Hello! \n
-    Your Applied Job Announcement which has code : ${job_announcement_id}, canceled by Company.</p>`;
+    Your Applied Job Announcement which has code : ${job_announcement_id}, canceled by Team.</p>`;
   }
 }

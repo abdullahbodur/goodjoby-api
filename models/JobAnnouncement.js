@@ -7,10 +7,10 @@ const JobAnnouncementSchema = new Schema({
     type: String,
     maxlength: [150, "Content must be 150 character or fewer"],
   },
-  company: {
+  team: {
     type: mongoose.Schema.ObjectId,
-    ref: "Company",
-    required: [true, "Please provide a company"],
+    ref: "Team",
+    required: [true, "Please provide a team"],
   },
   createdAt: {
     type: Date,

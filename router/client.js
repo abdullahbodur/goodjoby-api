@@ -37,13 +37,13 @@ const {
   tokenControl,
   profileTokenControl,
   tokenRoleControl,
-  blockedControl
+  blockedControl,
 } = require("../middlewares/tokenControls/tokenControls");
 
 const {
   cancelWrk,
   cancelWrkAccept,
-} = require("../middlewares/library/clientExpertCompanyMid");
+} = require("../middlewares/library/clientExpertTeamMid");
 const uploadFile = require("../helpers/libraries/uploadFile");
 const Client = require("../models/Client");
 const JobInfo = require("../models/JobInfo");
@@ -99,12 +99,8 @@ router.get(
   [
     tokenControl,
     blockedControl(Client),
-    tokenRoleControl("client"),
-    getWorksClient(
-      Work,
-      undefined,
-      "-__v -is_company -expert_type -rates -state"
-    ),
+    tokenRoleControl("goodjoby.api.cli"),
+    getWorksClient(Work, undefined, "-__v -is_team -expert_type -rates -state"),
   ],
   getWorks
 );
@@ -124,7 +120,7 @@ router.post("/resetpassword", CreateReqresetPassword(), resetPassword);
 router.post(
   "/uploadProfileImage",
   [
-    tokenControl, 
+    tokenControl,
     blockedControl(Client),
     uploadProfileImg.single("profile_image"),
     uploadProfileImage(),
@@ -145,7 +141,11 @@ router.post(
 
 router.post(
   "/create_pending_work",
-  [tokenControl, tokenRoleControl("client"),blockedControl(Client) /*modelAccess(Client)*/],
+  [
+    tokenControl,
+    tokenRoleControl("goodjoby.api.cli"),
+    blockedControl(Client) /*modelAccess(Client)*/,
+  ],
   createPendingWork
 );
 
@@ -157,19 +157,24 @@ router.get("/cancel_work_accept/:work_id", cancelWrkAccept, cancelWorkAccept);
 
 router.put(
   "/cancel_work/:work_id",
-  [tokenControl, tokenRoleControl("client"),blockedControl(Client), cancelWrk(true, "client")],
+  [
+    tokenControl,
+    tokenRoleControl("goodjoby.api.cli"),
+    blockedControl(Client),
+    cancelWrk(true, "client"),
+  ],
   cancelWork
 );
 
 router.put(
   "/cancel_p_work/:work_id",
-  [tokenControl, tokenRoleControl("client"),blockedControl(Client),],
+  [tokenControl, tokenRoleControl("goodjoby.api.cli"), blockedControl(Client)],
   cancelAnyPendingWork
 );
 
 router.put(
   "/accept_offer/:offer_id",
-  [tokenControl, tokenRoleControl("client"),blockedControl(Client),],
+  [tokenControl, tokenRoleControl("goodjoby.api.cli"), blockedControl(Client)],
   acceptAnyOffer
 );
 
@@ -177,13 +182,18 @@ router.get("/get_service_questions/:service_id", getServiceQuestions);
 
 router.post(
   "/add_document_to_work/:id",
-  [tokenControl, tokenRoleControl("client"),blockedControl(Client), uploadDocuments.array("document")],
+  [
+    tokenControl,
+    tokenRoleControl("goodjoby.api.cli"),
+    blockedControl(Client),
+    uploadDocuments.array("document"),
+  ],
   uploadNewDocuments
 );
 
 router.get(
   "/:username",
-  [profileTokenControl,blockedControl(Client), profileOwnerAccess()],
+  [profileTokenControl, blockedControl(Client), profileOwnerAccess()],
   profileClient
 );
 

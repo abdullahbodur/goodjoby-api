@@ -4,7 +4,7 @@ const {
   getResetPasswordTokenFromUser,
 } = require("../helpers/modelHelpers/modelHelper");
 const Schema = mongoose.Schema;
- 
+
 const AdminSchema = new Schema({
   name: {
     type: String,
@@ -38,12 +38,12 @@ const AdminSchema = new Schema({
   role: {
     type: String,
     default: "admin",
-    enum: ["client", "exper", "company", "admin"],
+    enum: ["client", "exper", "team", "admin"],
   },
   stage: {
     type: Number,
     enum: [0, 1, 2, 3, 4], // standart admin
-    required : [true,"Please provide a stage"]
+    required: [true, "Please provide a stage"],
   },
   blocked: {
     type: Boolean,
@@ -51,7 +51,7 @@ const AdminSchema = new Schema({
   },
   token: {
     type: String,
-    unique : [true,"This token already taken"]
+    unique: [true, "This token already taken"],
   },
   tokenExpire: {
     type: Date,

@@ -9,7 +9,7 @@ const createNewFileSystem = (
   allowedTypes,
   isDocument,
   fileSize
-) => { 
+) => {
   const storage = multer.diskStorage({
     destination: function (req, file, callback) {
       const rootDir = path.dirname(require.main.filename);
@@ -17,11 +17,16 @@ const createNewFileSystem = (
     },
     filename: function (req, file, callback) {
       const extension = file.mimetype.split("/")[1];
-      const id = crypting(isDocument ? req.params.id : req.user.id);
+      const id = crypting(isDocument ? req.params.id : req.user.client_id);
 
-      if (isDocument) req.files[req.files.length - 1]["file_url"] = `${filename}${id}_${req.files.length-1}.${extension}`;
+      if (isDocument)
+        req.files[req.files.length - 1]["file_url"] = `${filename}${id}_${
+          req.files.length - 1
+        }.${extension}`;
 
-      isDocument ? req.savedFileName = req.files[req.files.length-1]["file_url"]  :  req.savedFileName = `${filename}${id}.${extension}`;
+      isDocument
+        ? (req.savedFileName = req.files[req.files.length - 1]["file_url"])
+        : (req.savedFileName = `${filename}${id}.${extension}`);
 
       callback(null, req.savedFileName);
     },

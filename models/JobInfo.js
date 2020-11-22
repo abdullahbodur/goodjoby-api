@@ -22,7 +22,7 @@ const JobInfoSchema = new Schema({
     {
       type: mongoose.Schema.ObjectId,
       ref: "QuestionFilter",
-    }, 
+    },
   ],
 
   deal_count: {
@@ -30,10 +30,10 @@ const JobInfoSchema = new Schema({
     default: 0,
   },
 
-  companies: [
+  teams: [
     {
       type: mongoose.Schema.ObjectId,
-      ref: "Company",
+      ref: "Team",
     },
   ],
 
@@ -53,7 +53,7 @@ const JobInfoSchema = new Schema({
     type: Number,
     default: 0,
   },
-  company_count: {
+  team_count: {
     type: Number,
     default: 0,
   },

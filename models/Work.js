@@ -23,7 +23,7 @@ const WorkSchema = new Schema({
     default: Date.now,
   },
   expireAt: {
-    type: Date, 
+    type: Date,
   },
   finished_percent: {
     type: Number,
@@ -35,12 +35,12 @@ const WorkSchema = new Schema({
   },
   expert: {
     type: mongoose.Schema.ObjectId,
-    refPath : "expert_type"
+    refPath: "expert_type",
   },
   expert_type: {
     type: String,
     required: true,
-    enum: ["Company", "Expert"],
+    enum: ["Team", "Expert"],
   },
   messages: [
     {
@@ -59,9 +59,9 @@ const WorkSchema = new Schema({
     },
   },
 
-  is_company: {
+  is_team: {
     type: Boolean,
-    required: [true, "Please validate whether expert or company"],
+    required: [true, "Please validate whether expert or team"],
   },
   answers: [
     {
@@ -110,12 +110,12 @@ const WorkSchema = new Schema({
     type: Date,
   },
 
-  finish_token : {
+  finish_token: {
     type: String,
   },
-  finish_token_expire : {
+  finish_token_expire: {
     type: Date,
-  }
+  },
 });
 
 module.exports = mongoose.model("Work", WorkSchema);

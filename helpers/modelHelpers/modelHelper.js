@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 
 // == == == == == == == == == == == == == == == == == == == ==
-// HASH PASSWORD CLIENT - COMPANY - EXPER
+// HASH PASSWORD CLIENT - TEAM - EXPERT
 // == == == == == == == == == == == == == == == == == == == ==
 
 const hashPassword = (next, object) => {
@@ -22,7 +22,7 @@ const hashPassword = (next, object) => {
 };
 
 // == == == == == == == == == == == == == == == == == == == ==
-// GENERATE JSONWEBTOKEN CLIENT - COMPANY - EXPER
+// GENERATE JSONWEBTOKEN CLIENT - TEAM - EXPERT
 // == == == == == == == == == == == == == == == == == == == ==
 
 const generateJWTFromUser = (thisObject) => {
@@ -31,30 +31,54 @@ const generateJWTFromUser = (thisObject) => {
     jwt_secret_key_here,
     JWT_ADMIN_TIME,
     JWT_ADMIN_KEY,
+    COOKIE_EXPIRE,
+    ADMIN_COOKIE_EXPIRE,
   } = process.env;
 
-  
-  
+  // const payload = {
+  //   id: thisObject._id,
+  //   name: thisObject.name,
+  //   role: thisObject.role,
+  //   stage: thisObject.stage ? thisObject.stage : undefined,
+  // };
+
   const payload = {
-    id: thisObject._id,
-    name: thisObject.name ,
-    role: thisObject.role,
-    stage : thisObject.stage ? thisObject.stage  : undefined
+    client_id: thisObject._id,
+    goodjoby_ob: [
+      thisObject.role == "client"
+        ? "goodjoby.api.cli"
+        : thisObject.role == "team"
+        ? "goodjoby.api.tm"
+        : thisObject.role == "expert"
+        ? "goodjoby.api.exp"
+        : thisObject.role == "admin"
+        ? "goodjoby.api.adm"
+        : undefined,
+    ],
+    scope: ["api.goodjoby.auth", "api.goodjoby.web"],
+    auth_time: Date.now(),
+    exp:
+      Date.now() +
+      parseInt(thisObject.stage ? ADMIN_COOKIE_EXPIRE : COOKIE_EXPIRE),
+    aud: "api.goodjoby",
+    role: "auth_user",
+    device_id: "DEVICE ID",
+    stg: thisObject.stage ? thisObject.stage : undefined,
   };
 
   const token = jwt.sign(
     payload,
-    thisObject.stage ? JWT_ADMIN_KEY : jwt_secret_key_here,
-    {
-      expiresIn: thisObject.stage ? JWT_ADMIN_TIME : JWT_EXPIRE_TIME,
-    }
+    thisObject.stage ? JWT_ADMIN_KEY : jwt_secret_key_here
+    // {
+    //   expiresIn: thisObject.stage ? JWT_ADMIN_TIME : JWT_EXPIRE_TIME,
+    // }
   );
 
   return token;
 };
 
 // == == == == == == == == == == == == == == == == == == == ==
-// CREATE TOKEN FOR PASSWORD CLIENT - COMPANY - EXPER
+// CREATE TOKEN FOR PASSWORD CLIENT - TEAM - EXPERT
 // == == == == == == == == == == == == == == == == == == == ==
 
 const getResetPasswordTokenFromUser = (thisObject) => {
