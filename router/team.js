@@ -1,38 +1,39 @@
 const express = require("express");
 const router = express.Router();
-
 const {
-  profileExpert,
-  logoutExpert,
-  registerExpert,
-  signExpert,
+  registerTeam,
+  signTeam,
+  logoutTeam,
+  profileTeam,
+  forgotPasswordTeam,
   resetPassword,
-  forgotPasswordExpert,
-  getAllExpert,
+  getAllTeam,
   uploadedPIController,
   uploadedBIController,
-  createnewApplication,
-  uploadNewDocuments,
+  createJobAnouncement,
+  getAllJobAnouncement,
+  dateForInterview,
+  acceptJobApplication,
   addNewJobs,
   getSearchSubJob,
   getAllPropWorks,
   createExpertRequest,
-  cancelExpertRequest,
-  cancelWorkAccept,
   cancelWork,
-  getAllPropJobAnnouncements,
-  cancelJobApplication,
-} = require("../controllers/expert");
+  cancelWorkAccept,
+  upgradeFinishedPercent,
+  cancelJobAnnouncement,
+  cancelExpertRequest,
+} = require("../controllers/team");
 
 const {
-  expertRegister,
-  expertSignIn,
+  teamRegister,
+  teamSignIn,
   profileOwnerAccess,
   CreateReqforgotPassword,
   CreateReqresetPassword,
   uploadProfileImage,
   uploadBGImage,
-} = require("../helpers/Auth/expertAuthHelper");
+} = require("../helpers/Auth/teamAuthHelper");
 
 const {
   tokenControl,
@@ -43,61 +44,51 @@ const {
 
 const {
   crExpertRequest,
+  cancelWrk,
   clExpertRequest,
   cancelWrkAccept,
-  cancelWrk,
+  upgradeFinishedPrcnt,
 } = require("../middlewares/library/clientExpertTeamMid");
 const {
   propWorks,
   getRequestedWorks,
   getAllWorks,
 } = require("../middlewares/query/cetWorksQuery");
+
+const dataControl = require("../middlewares/tokenControls/dataControl");
 const queryMiddleware = require("../middlewares/query/queryMiddleware");
 const uploadFile = require("../helpers/libraries/uploadFile");
-const dataControl = require("../middlewares/tokenControls/dataControl");
-const Expert = require("../models/Expert");
+const Team = require("../models/Team");
 const JobInfo = require("../models/JobInfo");
 
-const uploadProfileImg = uploadFile("experts/profiles", "profile_image_", [
+const uploadProfileImg = uploadFile("teams/profiles", "profile_image_", [
   "image/png",
   "image/jpg",
   "image/jpeg",
 ]);
-const uploadBackgroundImg = uploadFile("experts/profiles", "background_image", [
+const uploadBackgroundImg = uploadFile("teams/profiles", "background_image", [
   "image/png",
   "image/jpg",
   "image/jpeg",
 ]);
-const uploadDocuments = uploadFile(
-  "experts/documents",
-  "job_document_",
-  [
-    "application/pdf",
-    "application/msword",
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    "text/plain",
-    "application/vnd.ms-powerpoint",
-    "image/png",
-    "image/jpg",
-    "image/jpeg",
-  ],
-  true,
-  "40mb"
-);
 
 // == == == == == == == == == == == == == == == == == == == ==
 //  GET REQUESTS
 // == == == == == == == == == == == == == == == == == == == ==
 
-router.get("/all", getAllExpert);
+router.get("/", (req, res, next) => {
+  res.send("<h1>Welcome Teams Page</h1>");
+});
 
-router.get("/logout", tokenControl, logoutExpert);
+router.get("/all", getAllTeam);
+
+router.get("/logout", tokenControl, logoutTeam);
 
 router.get(
   "/search_job",
   [
     tokenControl,
-    tokenRoleControl("goodjoby.api.exp"),
+    tokenRoleControl("goodjoby.api.tm"),
     queryMiddleware(JobInfo, "job_tags", undefined, {
       job_name: 1,
       sector_id: 1,
@@ -110,40 +101,35 @@ router.get(
   "/get_all_prop_works",
   [
     tokenControl,
-    tokenRoleControl("goodjoby.api.exp"),
-    blockedControl(Expert),
+    tokenRoleControl("goodjoby.api.tm"),
+    blockedControl(Team),
     propWorks,
   ],
   getAllPropWorks
 );
 
-router.get(
-  "/get-all-prop-job-announcements",
-  [tokenControl, tokenRoleControl("goodjoby.api.exp"), blockedControl(Expert)],
-  getAllPropJobAnnouncements
-);
-
 router.get("/get_all_requested_works", [
   tokenControl,
-  tokenRoleControl("goodjoby.api.exp"),
-  blockedControl(Expert),
+  tokenRoleControl("goodjoby.api.tm"),
+  blockedControl(Team),
   getRequestedWorks,
 ]);
 
 router.get("/get-all-works", [
   tokenControl,
-  tokenRoleControl("goodjoby.api.exp"),
+  tokenRoleControl("goodjoby.api.tm"),
   getAllWorks,
 ]);
+
 // == == == == == == == == == == == == == == == == == == == ==
 //  POST REQUESTS
 // == == == == == == == == == == == == == == == == == == == ==
 
-router.post("/register", expertRegister(), registerExpert);
+router.post("/register", teamRegister(), registerTeam);
 
-router.post("/login", expertSignIn(), signExpert);
+router.post("/login", teamSignIn(), signTeam);
 
-router.post("/forgotpassword", CreateReqforgotPassword(), forgotPasswordExpert);
+router.post("/forgotpassword", CreateReqforgotPassword(), forgotPasswordTeam);
 
 router.post("/resetpassword", CreateReqresetPassword(), resetPassword);
 
@@ -151,7 +137,6 @@ router.post(
   "/uploadProfileImage",
   [
     tokenControl,
-    blockedControl(Expert),
     uploadProfileImg.single("profile_image"),
     uploadProfileImage(),
   ],
@@ -162,27 +147,49 @@ router.post(
   "/uploadBackgroundImage",
   [
     tokenControl,
-    blockedControl(Expert),
+    dataControl,
     uploadBackgroundImg.single("background_image"),
     uploadBGImage(),
   ],
   uploadedBIController
 );
 
+router.post(
+  "/createJobAnouncement",
+  tokenControl,
+  dataControl,
+  tokenRoleControl("goodjoby.api.tm"),
+  blockedControl(Team),
+  createJobAnouncement
+);
+
+router.get(
+  "/getAllJobAnouncement",
+  tokenControl,
+  tokenRoleControl("goodjoby.api.tm"),
+  getAllJobAnouncement
+);
+
 // == == == == == == == == == == == == == == == == == == == ==
-//  PUT ROUTES
+//  PUT REQUESTS
 // == == == == == == == == == == == == == == == == == == == ==
 
 router.put(
+  "/dateForInterview/",
+  [tokenControl, tokenRoleControl("goodjoby.api.tm")],
+  dateForInterview
+);
+
+router.put(
   "/add_new_jobs",
-  [tokenControl, tokenRoleControl("goodjoby.api.exp"), blockedControl(Expert)],
+  [tokenControl, tokenRoleControl("goodjoby.api.tm"), blockedControl(Team)],
   addNewJobs
 );
 
 router.put(
-  "/cancel_job_application",
-  [tokenControl, tokenRoleControl("goodjoby.api.exp"), blockedControl(Expert)],
-  cancelJobApplication
+  "/cancel_job_announcement",
+  [tokenControl, tokenRoleControl("goodjoby.api.tm"), blockedControl(Team)],
+  cancelJobAnnouncement
 );
 
 // == == == == == == == == == == == == == == == == == == == ==
@@ -190,66 +197,46 @@ router.put(
 // == == == == == == == == == == == == == == == == == == == ==
 
 router.put(
-  "/cancel_work/:work_id",
-  [
-    tokenControl,
-    tokenRoleControl("goodjoby.api.exp"),
-    blockedControl(Expert),
-    cancelWrk(true, "expert"),
-  ],
-  cancelWork
+  "/accept_job_application/:announcement_id",
+  [tokenControl, tokenRoleControl("goodjoby.api.tm")],
+  acceptJobApplication
+);
+
+router.put(
+  "/upgrade_finished_percent/:work_id",
+  [tokenControl, tokenRoleControl("goodjoby.api.tm"), upgradeFinishedPrcnt()],
+  upgradeFinishedPercent
 );
 
 router.get("/cancel_work_accept/:work_id", cancelWrkAccept, cancelWorkAccept);
 
 router.put(
-  "/cancel_expert_request/:req_id",
-  [
-    tokenControl,
-    tokenRoleControl("goodjoby.api.exp"),
-    blockedControl(Expert),
-    clExpertRequest,
-  ],
-  cancelExpertRequest
+  "/cancel_work/:work_id",
+  [tokenControl, tokenRoleControl("goodjoby.api.tm"), cancelWrk(true, "team")],
+  cancelWork
 );
 
 router.post(
   "/create_expert_request/:id",
   [
     tokenControl,
-    tokenRoleControl("goodjoby.api.exp"),
-    blockedControl(Expert),
-    crExpertRequest(false),
+    tokenRoleControl("goodjoby.api.tm"),
+    blockedControl(Team),
+    crExpertRequest(true),
   ],
   createExpertRequest
 );
 
-router.post(
-  "/add_document_for_application/:id",
-  [
-    tokenControl,
-    tokenRoleControl("goodjoby.api.exp"),
-    blockedControl(Expert),
-    uploadDocuments.array("document"),
-  ],
-  uploadNewDocuments
-);
-
-router.post(
-  "/createNewApplication/:id",
-  [
-    tokenControl,
-    dataControl,
-    tokenRoleControl("goodjoby.api.exp"),
-    blockedControl(Expert),
-  ],
-  createnewApplication
-);
+router.put("/cancel_expert_request/:req_id", [
+  tokenControl,
+  [tokenRoleControl("goodjoby.api.tm"), blockedControl(Team), clExpertRequest],
+  cancelExpertRequest,
+]);
 
 router.get(
   "/:username",
   [profileTokenControl, profileOwnerAccess()],
-  profileExpert
+  profileTeam
 );
 
 module.exports = router;

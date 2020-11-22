@@ -1,11 +1,10 @@
 const mongoose = require("mongoose");
 const { hashPassword } = require("../helpers/modelHelpers/modelHelper");
+const Schema = mongoose.Schema;
 const {
   getResetPasswordTokenFromUser,
 } = require("../helpers/modelHelpers/modelHelper");
-const Schema = mongoose.Schema;
-
-const ClientSchema = new Schema({
+const TeamSchema = new Schema({
   username: {
     type: String,
     required: [true, "Please provide an username for account"],
@@ -16,6 +15,7 @@ const ClientSchema = new Schema({
       "Username must includes number (0-9), capital (A-Z), lower (a-z)",
     ],
   },
+
   name: {
     type: String,
     required: [true, "Please provide a name"],
@@ -30,6 +30,20 @@ const ClientSchema = new Schema({
       "Email type is not supported",
     ],
   },
+
+  job: {
+    sector_id: {
+      type: mongoose.Schema.ObjectId,
+      ref: "Sector",
+    },
+    positions: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: "JobInfo",
+      },
+    ],
+  },
+
   password: {
     type: String,
     required: [true, "Please provide a password"],
@@ -40,6 +54,12 @@ const ClientSchema = new Schema({
     ],
     select: false,
   },
+
+  sector: {
+    type: mongoose.Schema.ObjectId,
+    ref: "Sector",
+  },
+
   profile_image: {
     type: String,
     default: "defualtProfile.png",
@@ -56,11 +76,38 @@ const ClientSchema = new Schema({
     type: Date,
     default: Date.now,
   },
+
+  completed_works_count: {
+    type: Number,
+    default: 0,
+  },
+
+  rates: [
+    {
+      name: {
+        type: String,
+      },
+      rate: {
+        type: Number,
+      },
+    },
+  ],
+
+  workers: [
+    {
+      type: mongoose.Schema.ObjectId,
+      ref: "TeamWorker",
+    },
+  ],
+
+  // Worker_count
+
   role: {
     type: String,
-    default: "client",
+    default: "team",
     enum: ["client", "exper", "team", "admin"],
   },
+
   token: {
     type: String,
     unique: [true, "This token already taken"],
@@ -76,10 +123,17 @@ const ClientSchema = new Schema({
     },
   ],
 
-  pending_works: [
+  offers: [
     {
       type: mongoose.Schema.ObjectId,
-      ref: "PendingWork",
+      ref: "ExpertRequest",
+    },
+  ],
+
+  job_announcements: [
+    {
+      type: mongoose.Schema.ObjectId,
+      ref: "JobApplication",
     },
   ],
 
@@ -89,12 +143,12 @@ const ClientSchema = new Schema({
   },
 });
 
-ClientSchema.methods.getTokenFromUser = function () {
+TeamSchema.methods.getTokenFromUser = function () {
   return getResetPasswordTokenFromUser(this);
 };
 
-ClientSchema.pre("save", function (next) {
+TeamSchema.pre("save", function (next) {
   hashPassword(next, this);
 });
 
-module.exports = mongoose.model("Client", ClientSchema);
+module.exports = mongoose.model("Team", TeamSchema);

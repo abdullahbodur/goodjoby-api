@@ -6,9 +6,9 @@ const ChatShema = new Schema({
   room_ssid: {
     type: String,
     required: [true, "Please provide a room_ssid"],
-    unique : [true,"There is another room with that ssid"]
+    unique: [true, "There is another room with that ssid"],
   },
- 
+
   messages: [
     {
       from: {
@@ -22,12 +22,12 @@ const ChatShema = new Schema({
       from_path: {
         type: String,
         required: [true, "Please provide a fromPath"],
-        enum: ["Company", "Expert", "Client"],
+        enum: ["Team", "Expert", "Client"],
       },
       to_path: {
         type: String,
         required: [true, "Please provide a toPath"],
-        enum: ["Company", "Expert", "Client"],
+        enum: ["Team", "Expert", "Client"],
       },
       message: {
         type: String,
@@ -56,7 +56,7 @@ const ChatShema = new Schema({
       user_path: {
         type: String,
         required: [true, "Please provide a fromPath"],
-        enum: ["Company", "Expert", "Client"],
+        enum: ["Team", "Expert", "Client"],
       },
     },
   ],

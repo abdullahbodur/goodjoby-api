@@ -123,14 +123,14 @@ const cancelWork = errorHandlerWrapper(async (req, res, next) => {
       from: process.env.SMTP_USER,
       to: work.expert.email,
       subject: "Work Canceled By Us",
-      html: AdminMailTemplates.workExpert(work.expert.name,work_id),
+      html: AdminMailTemplates.workExpert(work.expert.name, work_id),
     });
 
     await sendMail({
       from: process.env.SMTP_USER,
       to: work.client.email,
       subject: "Work Canceled By Us",
-      html: AdminMailTemplates.workOwner(work.client.name,work_id)
+      html: AdminMailTemplates.workOwner(work.client.name, work_id),
     });
   } catch (error) {
     work.state = defState;
@@ -176,7 +176,10 @@ const cancelRequest = errorHandlerWrapper(async (req, res, next) => {
       from: process.env.SMTP_USER,
       to: expertRequest.expert.email,
       subject: "Your Offer Canceled By Us",
-      html: AdminMailTemplates.expertOffer(expertRequest.expert.name,request_id),
+      html: AdminMailTemplates.expertOffer(
+        expertRequest.expert.name,
+        request_id
+      ),
     });
   } catch (error) {
     expertRequest.state = defState;
@@ -235,7 +238,8 @@ const cancelPendingWork = errorHandlerWrapper(async (req, res, next) => {
       let requestMailList = [];
 
       pendingWork.expert_requests.forEach((expertRequest) => {
-        if (!stateControl(expertRequest.state)) requestMailList.push(expertRequest.expert.email);
+        if (!stateControl(expertRequest.state))
+          requestMailList.push(expertRequest.expert.email);
       });
 
       await sendMail({
@@ -250,7 +254,10 @@ const cancelPendingWork = errorHandlerWrapper(async (req, res, next) => {
       from: process.env.SMTP_USER,
       to: pendingWork.client.email,
       subject: "Your Pending Work Canceled By Us",
-      html: AdminMailTemplates.pendingWorkOwner(pendingWork.client.name,pending_work_id),
+      html: AdminMailTemplates.pendingWorkOwner(
+        pendingWork.client.name,
+        pending_work_id
+      ),
     });
   } catch (error) {
     pendingWork.state = defState;
@@ -305,7 +312,10 @@ const cancelJobApplication = errorHandlerWrapper(async (req, res, next) => {
       from: process.env.SMTP_USER,
       to: jobApplication.expert.email,
       subject: "Job Application Canceled By Us",
-      html: AdminMailTemplates.jobApplicationApplier(jobApplication.expert.name,application_id),
+      html: AdminMailTemplates.jobApplicationApplier(
+        jobApplication.expert.name,
+        application_id
+      ),
     });
   } catch (error) {
     jobApplication.state = defState;
@@ -336,7 +346,7 @@ const cancelJobAnnouncement = errorHandlerWrapper(async (req, res, next) => {
   const jobAnnouncement = await JobAnnouncement.findById(job_announcement_id)
     .populate([
       {
-        path: "company",
+        path: "team",
         select: "email name",
       },
       {
@@ -350,7 +360,7 @@ const cancelJobAnnouncement = errorHandlerWrapper(async (req, res, next) => {
     ])
     .select({
       _id: 1,
-      company: 1,
+      team: 1,
       "job_applications.expert_id": 1,
       state: 1,
     });
@@ -384,7 +394,6 @@ const cancelJobAnnouncement = errorHandlerWrapper(async (req, res, next) => {
           applicationMailList.push(application.expert_id.email);
       });
 
-
       await sendMail({
         from: process.env.SMTP_USER,
         to: applicationMailList,
@@ -395,9 +404,12 @@ const cancelJobAnnouncement = errorHandlerWrapper(async (req, res, next) => {
 
     await sendMail({
       from: process.env.SMTP_USER,
-      to: jobAnnouncement.company.email,
+      to: jobAnnouncement.team.email,
       subject: "Your Job Announcement Work Canceled By Us",
-      html: AdminMailTemplates.jobAnnouncementCompany(jobAnnouncement.company.name,job_announcement_id),
+      html: AdminMailTemplates.jobAnnouncementTeam(
+        jobAnnouncement.team.name,
+        job_announcement_id
+      ),
     });
   } catch (error) {
     jobAnnouncement.state = defState;

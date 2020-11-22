@@ -16,14 +16,14 @@ const SectorSchema = new Schema({
     },
   ],
 
-  companies: {
+  teams: {
     type: mongoose.Schema.ObjectId,
-    ref: "Company",
+    ref: "Team",
   },
   workers: {
     type: mongoose.Schema.ObjectId,
     ref: "Expert",
-  }, 
+  },
 });
 
 module.exports = mongoose.model("Sector", SectorSchema);

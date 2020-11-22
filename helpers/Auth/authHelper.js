@@ -9,7 +9,7 @@ const { sendJwtToUser } = require("../authorization/tokenHelpers");
 const Admin = require("../../models/Admin");
 
 // == == == == == == == == == == == == == == == == == == == ==
-//  REGISTER CLIENT - COMPANY - EXPER
+//  REGISTER CLIENT - TEAM - EXPERT
 // == == == == == == == == == == == == == == == == == == == ==
 
 const authRegister = errorHandlerWrapper(async (model, req, res) => {
@@ -20,7 +20,7 @@ const authRegister = errorHandlerWrapper(async (model, req, res) => {
 });
 
 // == == == == == == == == == == == == == == == == == == == ==
-//  SIGN IN CLIENT - COMPANY - EXPER
+//  SIGN IN CLIENT - TEAM - EXPERT
 // == == == == == == == == == == == == == == == == == == == ==
 
 const authSignIn = errorHandlerWrapper(async (model, req, res, next) => {
@@ -82,7 +82,7 @@ const adminSignInHelp = errorHandlerWrapper(async (req, res, next) => {
 });
 
 // == == == == == == == == == == == == == == == == == == == ==
-//  GET PROFILE OWNER ACCESS COMPANY - CLIENT - EXPER
+//  GET PROFILE OWNER ACCESS TEAM - CLIENT - EXPERT
 // == == == == == == == == == == == == == == == == == == == ==
 
 const profileOwnerAccessControl = errorHandlerWrapper(
@@ -108,7 +108,7 @@ const profileOwnerAccessControl = errorHandlerWrapper(
 
     const objectModelId = String(objectModel._id);
 
-    if (isHasToken && objectModelId !== req.user.id) {
+    if (isHasToken && objectModelId !== req.user.client_id) {
       req.profileOwnerAccess = false;
       return next();
     }
@@ -121,7 +121,7 @@ const profileOwnerAccessControl = errorHandlerWrapper(
 );
 
 // == == == == == == == == == == == == == == == == == == == ==
-//  FORGOT PASSWORD CLIENT - COMPANY - EXPER
+//  FORGOT PASSWORD CLIENT - TEAM - EXPERT
 // == == == == == == == == == == == == == == == == == == == ==
 
 const forgotPassword = errorHandlerWrapper(
@@ -154,7 +154,6 @@ const forgotPassword = errorHandlerWrapper(
 
     const resetPasswordUrl = `http://${DOMAIN_URI}${PORT}/api/${name}/resetpassword?resetPasswordToken=${token}`;
 
-
     try {
       await sendMail({
         from: process.env.SMTP_USER,
@@ -176,7 +175,7 @@ const forgotPassword = errorHandlerWrapper(
 );
 
 // == == == == == == == == == == == == == == == == == == == ==
-//  RESET PASSWORD WITH TOKEN  COMPANY - CLIENT - EXPER
+//  RESET PASSWORD WITH TOKEN  TEAM - CLIENT - EXPERT
 // == == == == == == == == == == == == == == == == == == == ==
 
 const resetPasswordWithAuthHelper = errorHandlerWrapper(
@@ -209,7 +208,7 @@ const resetPasswordWithAuthHelper = errorHandlerWrapper(
 const uploadedPFSaver = errorHandlerWrapper(async (model, req, next, prop) => {
   let obj = {};
   obj[prop] = req.savedFileName;
-  const objectModel = await model.findByIdAndUpdate(req.user.id, obj, {
+  const objectModel = await model.findByIdAndUpdate(req.user.client_id, obj, {
     new: true,
     runValidators: true,
   });

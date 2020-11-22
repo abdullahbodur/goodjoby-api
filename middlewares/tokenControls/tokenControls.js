@@ -8,7 +8,7 @@ const CustomError = require("../../helpers/error/CustomError");
 const Admin = require("../../models/Admin");
 const Expert = require("../../models/Expert");
 const Client = require("../../models/Client");
-const Company = require("../../models/Company");
+const Team = require("../../models/Team");
 
 const {
   dataControl,
@@ -33,16 +33,21 @@ const tokenControl = errorHandlerWrapper((req, res, next) => {
   jwt.verify(token, jwt_secret_key_here, (err, decoded) => {
     if (err) next(new CustomError("Your Authorize is invalid", 401));
     req.user = {
-      id: decoded.id,
-      name: decoded.name,
-      role: decoded.role,
+      client_id: decoded.client_id,
+      goodjoby_ob: decoded.goodjoby_ob,
+      scope: decoded.scope,
+      auth_time: decoded.auth_time,
+      exp : decoded.exp,
+      aud : decoded.aud,
+      role : decoded.role,
+      device_id : decoded.device_id,
     };
     return next();
   });
 });
 
 // == == == == == == == == == == == == == == == == == == == ==
-//  PROFILE ACCESS TOKEN CONTROL COMPANY - CLIENT - EXPER
+//  PROFILE ACCESS TOKEN CONTROL TEAM - CLIENT - EXPERT
 // == == == == == == == == == == == == == == == == == == == ==
 
 const profileTokenControl = errorHandlerWrapper((req, res, next) => {
@@ -56,24 +61,30 @@ const profileTokenControl = errorHandlerWrapper((req, res, next) => {
   jwt.verify(token, jwt_secret_key_here, (err, decoded) => {
     if (err) next(new CustomError("Your Authorize is invalid", 401));
     req.user = {
-      id: decoded.id,
-      name: decoded.name,
+      client_id: decoded.client_id,
+      goodjoby_ob: decoded.goodjoby_ob,
+      scope: decoded.scope,
+      auth_time: decoded.auth_time,
+      exp : decoded.exp,
+      aud : decoded.aud,
+      role : decoded.role,
+      device_id : decoded.device_id,
     };
     return next();
   });
 });
 
 // == == == == == == == == == == == == == == == == == == == ==
-//  TOKEN ROLE CONTROL - COMPANY - EXPERT - CLIENT ADMIN
+//  TOKEN ROLE CONTROL - TEAM - EXPERT - CLIENT ADMIN
 // == == == == == == == == == == == == == == == == == == == ==
 
 const tokenRoleControl = (role_name) => {
   return (req, res, next) => {
-    const { role } = req.user;
+    const { goodjoby_ob } = req.user;
 
-    if (role_name !== role) {
+    if (!goodjoby_ob.includes(role_name))
       return next(new CustomError("Authorization is invalid ", 403));
-    }
+
     return next();
   };
 };
@@ -84,11 +95,11 @@ const tokenRoleControl = (role_name) => {
 
 const blockedControl = (model) =>
   errorHandlerWrapper(async (req, res, next) => {
-    if (!req.user.id) return next(new CustomError("Please provide an id", 400));
+    if (!req.user.client_id)
+      return next(new CustomError("Please provide an id", 400));
 
-    const objectModel = await model.findById(req.user.id);
+    const objectModel = await model.findById(req.user.client_id);
 
-    
     if (objectModel.blocked)
       return next(
         new CustomError("This user has been banned for any reason", 403)
@@ -100,7 +111,7 @@ const blockedControl = (model) =>
   });
 
 // == == == == == == == == == == == == == == == == == == == ==
-//  TOKEN ROLE CONTROL - COMPANY - EXPERT - CLIENT ADMIN
+//  TOKEN ROLE CONTROL - TEAM - EXPERT - CLIENT ADMIN
 // == == == == == == == == == == == == == == == == == == == ==
 
 // const modelAccess = (model) => {
@@ -140,11 +151,17 @@ const adminTokenControl = errorHandlerWrapper(async (req, res, next) => {
   jwt.verify(token, JWT_ADMIN_KEY, async (err, decoded) => {
     if (err) next(new CustomError("Authorize is invalid", 401));
     req.user = {
-      id: decoded.id,
-      name: decoded.name,
-      role: decoded.role,
-      stage: decoded.stage,
+      client_id: decoded.client_id,
+      goodjoby_ob: decoded.goodjoby_ob,
+      scope: decoded.scope,
+      auth_time: decoded.auth_time,
+      exp : decoded.exp,
+      aud : decoded.aud,
+      role : decoded.role,
+      device_id : decoded.device_id,
+      stg : decoded.stg
     };
+
 
     return next();
   });
@@ -157,7 +174,8 @@ const adminTokenControl = errorHandlerWrapper(async (req, res, next) => {
 const adminStageControl = (stage_codes) => {
   return errorHandlerWrapper(async (req, res, next) => {
     const tokenData = req.user;
-    if (!stage_codes.includes(tokenData.stage)) {
+    console.log(tokenData)
+    if (!stage_codes.includes(tokenData.stg)) {
       return next(new CustomError("Authorize is invalid"), 403);
     }
 
@@ -177,8 +195,8 @@ const existControl = (model) =>
       const modelName = req.body.role;
 
       model =
-        modelName == "company"
-          ? Company
+        modelName == "team"
+          ? Team
           : modelName == "client"
           ? Client
           : modelName == "expert"
@@ -205,9 +223,9 @@ const existControl = (model) =>
   });
 
 const adminAuthorityControl = (req, res, next) => {
-  if (res.exist.stage >= req.user.stage)
+  if (res.exist.stage >= req.user.stg)
     return next(new CustomError("Your authorization is not supported", 400));
-  return next()  
+  return next();
 };
 
 module.exports = {

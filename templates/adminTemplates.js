@@ -1,14 +1,14 @@
 class AdminMailTemplates {
-  static jobAnnouncementCompany(company_name, job_announcement_id) {
+  static jobAnnouncementTeam(team_name, job_announcement_id) {
     return `<h2>Your Job Announcement Canceled By Us</h2>
-      <p>Hello ${company_name},\nThe Job Announcement with the code ${job_announcement_id} was closed by us. If something problem, contact us</p>`;
+      <p>Hello ${team_name},\nThe Job Announcement with the code ${job_announcement_id} was closed by us. If something problem, contact us</p>`;
   }
   static jobAnnouncementApplier(job_announcement_id) {
     return `<h2>Your Applied Job Announcement Canceled By Us</h2>
       <p>Hello !\nThe Job Announcement with the code ${job_announcement_id} was closed by us. If something problem, contact us</p>`;
   }
 
-  static jobApplicationApplier(expertName,application_id) {
+  static jobApplicationApplier(expertName, application_id) {
     return `<h2>Job Application Canceled By Us</h2>
     <p>Hello ${expertName},The Job Application with the code ${application_id} was closed by us. If something problem, contact us</p>`;
   }

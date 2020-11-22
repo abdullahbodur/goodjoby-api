@@ -7,57 +7,56 @@ const {
   resetPasswordWithAuthHelper,
   uploadedPFSaver,
 } = require("./authHelper");
-
-const Expert = require("../../models/Expert");
+const Team = require("../../models/Team");
 
 // == == == == == == == == == == == == == == == == == == == ==
-//  EXPERT REGISTER ACCOUNT
+//  TEAM REGISTER ACCOUNT
 // == == == == == == == == == == == == == == == == == == == ==
 
-const expertRegister = function () {
+const teamRegister = function () {
   return errorHandlerWrapper(async (req, res, next) => {
-    res.data = await authRegister(Expert, req, res);
+    res.data = await authRegister(Team, req, res);
     next();
   });
 };
 
 // == == == == == == == == == == == == == == == == == == == ==
-//  EXPERT SIGN IN ACCOUNT
+//  TEAM SIGN IN ACCOUNT
 // == == == == == == == == == == == == == == == == == == == ==
 
-const expertSignIn = () => {
+const teamSignIn = () => {
   return (req, res, next) => {
-    authSignIn(Expert, req, res, next);
+    authSignIn(Team, req, res, next);
   };
 };
 
 // == == == == == == == == == == == == == == == == == == == ==
-//  EXPERT GET PROFILE OWNER ACCESS
+//  TEAM GET PROFILE OWNER ACCESS
 // == == == == == == == == == == == == == == == == == == == ==
 
 const profileOwnerAccess = () => {
   return (req, res, next) => {
-    profileOwnerAccessControl(req, Expert, next, "expert");
+    profileOwnerAccessControl(req, Team, next, "team");
   };
 };
 
 // == == == == == == == == == == == == == == == == == == == ==
-//  CREATE REQUEST FORGOT PASSWORD FOR EXPERT
+//  CREATE REQUEST FORGOT PASSWORD FOR TEAM
 // == == == == == == == == == == == == == == == == == == == ==
 
 const CreateReqforgotPassword = () => {
   return (req, res, next) => {
-    forgotPassword(Expert, req, res, next, "expert");
+    forgotPassword(Team, req, res, next, "team");
   };
 };
 
 // == == == == == == == == == == == == == == == == == == == ==
-//  CREATE NEW PASSWORD IF HAS A TOKEN FOR EXPERT
+//  CREATE NEW PASSWORD IF HAS A TOKEN FOR TEAM
 // == == == == == == == == == == == == == == == == == == == ==
 
 const CreateReqresetPassword = () => {
   return (req, res, next) => {
-    resetPasswordWithAuthHelper(req, next, Expert);
+    resetPasswordWithAuthHelper(req, next, Team);
   };
 };
 
@@ -67,7 +66,7 @@ const CreateReqresetPassword = () => {
 
 const uploadProfileImage = () => {
   return (req, res, next) => {
-    uploadedPFSaver(Expert, req, next, "profile_image");
+    uploadedPFSaver(Team, req, next, "profile_image");
   };
 };
 
@@ -77,13 +76,13 @@ const uploadProfileImage = () => {
 
 const uploadBGImage = () => {
   return (req, res, next) => {
-    uploadedPFSaver(Expert, req, next, "background_image");
+    uploadedPFSaver(Team, req, next, "background_image");
   };
 };
 
 module.exports = {
-  expertRegister,
-  expertSignIn,
+  teamRegister,
+  teamSignIn,
   profileOwnerAccess,
   CreateReqforgotPassword,
   CreateReqresetPassword,

@@ -86,31 +86,31 @@ const getAllExpert = errorHandlerWrapper(async (req, res, next) => {
 });
 
 // == == == == == == == == == == == == == == == == == == == ==
-//  UPLOAD PROFILE IMAGE FOR COMPANY
+//  UPLOAD PROFILE IMAGE FOR TEAM
 // == == == == == == == == == == == == == == == == == == == ==
 
 const uploadedPIController = (req, res, next) => {
   res.status(200).json({
     success: true,
-    message: "Company profile image uploaded successfuly",
+    message: "Team profile image uploaded successfuly",
     data: req.uploadedUser,
   });
 };
 
 // == == == == == == == == == == == == == == == == == == == ==
-//  UPLOAD BACKGROUND IMAGE FOR COMPANY
+//  UPLOAD BACKGROUND IMAGE FOR TEAM
 // == == == == == == == == == == == == == == == == == == == ==
 
 const uploadedBIController = (req, res, next) => {
   res.status(200).json({
     success: true,
-    message: "Company background image uploaded successfuly",
+    message: "Team background image uploaded successfuly",
     data: req.uploadedUser,
   });
 };
 
 // == == == == == == == == == == == == == == == == == == == ==
-//  UPLOAD BACKGROUND IMAGE FOR COMPANY
+//  UPLOAD BACKGROUND IMAGE FOR TEAM
 // == == == == == == == == == == == == == == == == == == == ==
 
 const createnewApplication = errorHandlerWrapper(async (req, res, next) => {
@@ -119,7 +119,7 @@ const createnewApplication = errorHandlerWrapper(async (req, res, next) => {
 
   const jobApplication = await JobApplication.create({
     ...data,
-    expert: req.user.id,
+    expert: req.user.client_id,
     job_announcement_id: id,
   });
 
@@ -262,7 +262,7 @@ const getAllPropJobAnnouncements = async (req, res, next) => {
         select: "job_name",
       },
       {
-        path: "company",
+        path: "team",
         select: "name",
       },
     ]);
@@ -288,17 +288,17 @@ const cancelJobApplication = errorHandlerWrapper(async (req, res, next) => {
   }).select({ _id: 1, state: 1 });
 
   dataControl(jobApplication, next, "Job Applcation is not found", 400);
- 
+
   jobApplication.state = parseInt(STATE_CANCELED);
   await jobApplication.save();
 
   res.status(200).json({
     success: true,
-    message : "Job Application canceled successfuly",
+    message: "Job Application canceled successfuly",
     data: jobApplication,
   });
 });
- 
+
 module.exports = {
   profileExpert,
   logoutExpert,

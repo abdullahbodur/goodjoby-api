@@ -7,16 +7,12 @@ const {
 
 const getWorksClient = function (model, options, field) {
   return errorHandlerWrapper(async (req, res, next) => {
+    const { STATE_CREATED, STATE_ACTIVE } = process.env;
 
-    const {STATE_CREATED,STATE_ACTIVE} = process.env;
-
-    let query = model.find({ 
-      client: req.user.id,
+    let query = model.find({
+      client: req.user.client_id,
       state: {
-        $in: [
-          parseInt(STATE_CREATED),
-          parseInt(STATE_ACTIVE),
-        ],
+        $in: [parseInt(STATE_CREATED), parseInt(STATE_ACTIVE)],
       },
     });
 

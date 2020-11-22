@@ -7,7 +7,7 @@ const Work = require("../../models/Work");
 const { usePagination } = require("./queryHelper");
 
 // == == == == == == == == == == == == == == == == == == == ==
-//  GET ALL - PROP WORKS - EXPERT - COMPANY
+//  GET ALL - PROP WORKS - EXPERT - TEAM
 // == == == == == == == == == == == == == == == == == == == ==
 
 const propWorks = errorHandlerWrapper(async (req, res, next) => {
@@ -44,14 +44,14 @@ const propWorks = errorHandlerWrapper(async (req, res, next) => {
 });
 
 // == == == == == == == == == == == == == == == == == == == ==
-//  GET REQUESTED WORKS - EXPERT - COMPANY
+//  GET REQUESTED WORKS - EXPERT - TEAM
 // == == == == == == == == == == == == == == == == == == == ==
 
 const getRequestedWorks = errorHandlerWrapper(async (req, res, next) => {
   const { STATE_CREATED, STATE_ACTIVE } = process.env;
 
   const qry = {
-    expert: req.user.id,
+    expert: req.user.client_id,
     state: {
       $in: [parseInt(STATE_CREATED), parseInt(STATE_ACTIVE)],
     },
@@ -75,12 +75,12 @@ const getRequestedWorks = errorHandlerWrapper(async (req, res, next) => {
 });
 
 // == == == == == == == == == == == == == == == == == == == ==
-//  GET ALL WORKS - EXPERT - COMPANY
+//  GET ALL WORKS - EXPERT - TEAM
 // == == == == == == == == == == == == == == == == == == == ==
 
 const getAllWorks = errorHandlerWrapper(async (req, res, next) => {
   const works = await Work.find({
-    expert: req.user.id,
+    expert: req.user.client_id,
     state: {
       $in: [
         parseInt(process.env.STATE_CREATED),

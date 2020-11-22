@@ -13,17 +13,17 @@ const ExpertRequestSchema = new Schema({
   },
   expert: {
     type: mongoose.Schema.ObjectId,
-    refPath : "expert_type"
+    refPath: "expert_type",
   },
   expert_type: {
     type: String,
     required: true,
-    enum: ["Company", "Expert"],
+    enum: ["Team", "Expert"],
   },
- 
-  is_company: {
+
+  is_team: {
     type: Boolean,
-    required: [true, "Please validate whether expert or company"],
+    required: [true, "Please validate whether expert or team"],
   },
   price: {
     type: Number,
@@ -33,10 +33,10 @@ const ExpertRequestSchema = new Schema({
       },
       message: "Price must be greater than 0",
     },
-    required : [true,"Please enter a price for your offer"]
+    required: [true, "Please enter a price for your offer"],
   },
 
-  pending_work_id : {
+  pending_work_id: {
     type: mongoose.Schema.ObjectId,
     ref: "PendingWork",
   },
