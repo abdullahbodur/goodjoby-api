@@ -235,13 +235,6 @@ const acceptJobApplication = errorHandlerWrapper(async (req, res, next) => {
 // == == == == == == == == == == == == == == == == == == == ==
 
 const addNewJobs = errorHandlerWrapper(async (req, res, next) => {
-  const data = req.body;
-  const expert = req.user.userObject;
-
-  expert.job = data;
-
-  await expert.save();
-
   res.status(200).json({
     success: true,
     message: "You added Positions Successfuly",

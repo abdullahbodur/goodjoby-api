@@ -11,7 +11,7 @@ const JobInfoSchema = new Schema({
   },
 
   job_tags: [
-    { type: String, unique: [true, "This Job-Tag is created before"] },
+    { type: String, },
   ],
   job_slogan: {
     type: String,

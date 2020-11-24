@@ -4,6 +4,7 @@ const CustomError = require("../helpers/error/CustomError");
 const Expert = require("../models/Expert");
 const JobAnnouncement = require("../models/JobAnnouncement");
 const JobApplication = require("../models/JobApplication");
+const JobInfo = require("../models/JobInfo");
 const PendingWork = require("../models/PendingWork");
 
 // const crypting = require("./crypting");
@@ -166,13 +167,6 @@ const uploadNewDocuments = errorHandlerWrapper(async (req, res, next) => {
 // == == == == == == == == == == == == == == == == == == == ==
 
 const addNewJobs = errorHandlerWrapper(async (req, res, next) => {
-  const data = req.body;
-  const expert = req.user.userObject;
-
-  expert.job = data;
-
-  await expert.save();
-
   res.status(200).json({
     success: true,
     message: "You added Positions Successfuly",
