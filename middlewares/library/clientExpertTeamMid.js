@@ -9,6 +9,7 @@ const {
 const sendMail = require("../../helpers/libraries/sendMail");
 const { dataControl } = require("../../helpers/database/databaseControl");
 
+const JobInfo = require('../../models/JobInfo');
 // == == == == == == == == == == == == == == == == == == == ==
 //  CREATE  OFFER - TEAM - EXPERT
 // == == == == == == == == == == == == == == == == == == == ==
@@ -36,7 +37,10 @@ const crExpertRequest = (isTeam) =>
       pendingWork.expert_requests.filter(
         (e) =>
           e.expert == req.user.client_id &&
-          e.is_team == (req.user.userObject.goodjoby_ob.includes("goodjoby.api.tm") ? true : false)
+          e.is_team ==
+            (req.user.userObject.goodjoby_ob.includes("goodjoby.api.tm")
+              ? true
+              : false)
       ).length > 0
     )
       return next(new CustomError("You are already offer this work", 400));
@@ -296,10 +300,51 @@ const upgradeFinishedPrcnt = () =>
     next();
   });
 
+const addNewPosition = (isTeam) =>
+  errorHandlerWrapper(async (req, res, next) => {
+    const { sector_id, position } = req.body;
+    const expert = req.user.userObject;
+
+    dataControl(sector_id, next, "Please provide an data", 400);
+    dataControl(position, next, "Please provide an data", 400);
+
+    const job = await JobInfo.findOne({
+      _id: position,
+      sector_id: sector_id,
+    });
+
+    dataControl(job, next, "Position not found", 400);
+
+    const defJob = expert.job;
+
+    if (expert.job.sector_id) {
+      if (expert.job.sector_id != sector_id)
+        return next(new CustomError("Sectors are not matched", 400));
+    } else expert.job.sector_id = sector_id;
+
+    if (expert.job.positions.includes(position))
+      return next(new CustomError("This position already added", 400));
+
+    try {
+      expert.job.positions.push(position);
+      await expert.save();
+
+      job[isTeam ? "teams" : "experts"].push(req.user.client_id);
+      job[isTeam ? "team_count" : "worker_count"]++
+      await job.save();
+    } catch (error) {
+      expert.job = defJob;
+      await expert.save();
+    }
+
+    return next();
+  });
+
 module.exports = {
   crExpertRequest,
   clExpertRequest,
   cancelWrk,
   cancelWrkAccept,
   upgradeFinishedPrcnt,
+  addNewPosition
 };

@@ -46,6 +46,7 @@ const {
   clExpertRequest,
   cancelWrkAccept,
   cancelWrk,
+  addNewPosition,
 } = require("../middlewares/library/clientExpertTeamMid");
 const {
   propWorks,
@@ -176,6 +177,7 @@ router.post(
 router.put(
   "/add_new_jobs",
   [tokenControl, tokenRoleControl("goodjoby.api.exp"), blockedControl(Expert)],
+  addNewPosition(false),
   addNewJobs
 );
 

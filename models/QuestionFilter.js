@@ -11,7 +11,6 @@ const QuestionFilterSchema = new Schema({
   answers: [
     {
       type: String,
-      unique: [true, "This Answer is same another"],
     },
   ],
   definition: {
