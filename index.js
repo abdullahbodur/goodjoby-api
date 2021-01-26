@@ -5,7 +5,7 @@ const apiRouter = require("./router/index");
 const customErrorHandler = require("./middlewares/errors/customErrorHandling");
 const path = require("path");
 const accessControlMiddleware = require("./middlewares/protocolMiddlewares.js/protocolMiddleware");
-
+const cors = require("cors");
 dotenv.config({
   path: "./config/env/config.env",
 });
@@ -17,7 +17,14 @@ const app = express();
 app.disable("x-powered-by");
 app.use(express.json());
 
-app.use(accessControlMiddleware);
+
+// delete this middleware from middlewares/protocolMiddlewares.js
+// app.use(accessControlMiddleware); 
+
+
+
+// when this api published as stable, set origin value to "www.example.com"
+app.use(cors({ origin: true, credentials: true }));
 
 app.use("/api", apiRouter);
 

@@ -9,12 +9,11 @@ const Admin = require("../../models/Admin");
 const Expert = require("../../models/Expert");
 const Client = require("../../models/Client");
 const Team = require("../../models/Team");
+const { dataControl } = require("../../helpers/database/databaseControl");
+const fetch = require("node-fetch");
 
-const {
-  dataControl,
-  multiDataControl,
-} = require("../../helpers/database/databaseControl");
-
+const FACEBOOK_TOKEN_DECODE =
+  "https://graph.facebook.com/me?fields=id,email,name&access_token=";
 // == == == == == == == == == == == == == == == == == == == ==
 //  TOKEN CONTROL IF IT SENDED
 // == == == == == == == == == == == == == == == == == == == ==
@@ -37,10 +36,10 @@ const tokenControl = errorHandlerWrapper((req, res, next) => {
       goodjoby_ob: decoded.goodjoby_ob,
       scope: decoded.scope,
       auth_time: decoded.auth_time,
-      exp : decoded.exp,
-      aud : decoded.aud,
-      role : decoded.role,
-      device_id : decoded.device_id,
+      exp: decoded.exp,
+      aud: decoded.aud,
+      role: decoded.role,
+      device_id: decoded.device_id,
     };
     return next();
   });
@@ -65,10 +64,10 @@ const profileTokenControl = errorHandlerWrapper((req, res, next) => {
       goodjoby_ob: decoded.goodjoby_ob,
       scope: decoded.scope,
       auth_time: decoded.auth_time,
-      exp : decoded.exp,
-      aud : decoded.aud,
-      role : decoded.role,
-      device_id : decoded.device_id,
+      exp: decoded.exp,
+      aud: decoded.aud,
+      role: decoded.role,
+      device_id: decoded.device_id,
     };
     return next();
   });
@@ -155,13 +154,12 @@ const adminTokenControl = errorHandlerWrapper(async (req, res, next) => {
       goodjoby_ob: decoded.goodjoby_ob,
       scope: decoded.scope,
       auth_time: decoded.auth_time,
-      exp : decoded.exp,
-      aud : decoded.aud,
-      role : decoded.role,
-      device_id : decoded.device_id,
-      stg : decoded.stg
+      exp: decoded.exp,
+      aud: decoded.aud,
+      role: decoded.role,
+      device_id: decoded.device_id,
+      stg: decoded.stg,
     };
-
 
     return next();
   });
@@ -174,7 +172,7 @@ const adminTokenControl = errorHandlerWrapper(async (req, res, next) => {
 const adminStageControl = (stage_codes) => {
   return errorHandlerWrapper(async (req, res, next) => {
     const tokenData = req.user;
-    console.log(tokenData)
+    console.log(tokenData);
     if (!stage_codes.includes(tokenData.stg)) {
       return next(new CustomError("Authorize is invalid"), 403);
     }
@@ -222,10 +220,66 @@ const existControl = (model) =>
     return next();
   });
 
+// == == == == == == == == == == == == == == == == == == == ==
+//  ADMIN AUTHORITY CONTROLLER
+// == == == == == == == == == == == == == == == == == == == ==
 const adminAuthorityControl = (req, res, next) => {
   if (res.exist.stage >= req.user.stg)
     return next(new CustomError("Your authorization is not supported", 400));
   return next();
+};
+
+// == == == == == == == == == == == == == == == == == == == ==
+//  GOOGLE ACCOUNT TOKEN DECODER
+// == == == == == == == == == == == == == == == == == == == ==
+
+const googleTokenDecoder = (access_token) => {
+  try {
+    const payload = jwt.decode(access_token);
+
+    let user = {};
+
+    if (payload && payload.email) {
+      user["email"] = payload.email;
+
+      user["name"] = payload.name;
+
+      user["google_id"] = payload.sub;
+
+      return { success: true, user };
+    }
+
+    return { success: false, user };
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// == == == == == == == == == == == == == == == == == == == ==
+//  FACEBOOK ACCOUNT ACCESS TOKEN DECODER
+// == == == == == == == == == == == == == == == == == == == ==
+
+const facebookTokenDecoder = async (access_token) => {
+  try {
+    const URI = FACEBOOK_TOKEN_DECODE + access_token;
+
+    let user = {};
+
+    const decoded = await fetch(URI);
+    const response = await decoded.json();
+
+    console.log(response);
+
+    if (response.error) return { success: false, user };
+
+    user["email"] = response.email;
+    user["name"] = response.name;
+    user["facebook_id"] = response.id;
+
+    return { success: true, user };
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 module.exports = {
@@ -238,4 +292,6 @@ module.exports = {
   adminTokenControl,
   existControl,
   adminAuthorityControl,
+  googleTokenDecoder,
+  facebookTokenDecoder,
 };

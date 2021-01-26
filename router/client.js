@@ -21,6 +21,7 @@ const {
   cancelWorkAccept,
   getWorks,
   getMessages,
+  socialIDController,
 } = require("../controllers/client");
 
 const {
@@ -31,6 +32,7 @@ const {
   CreateReqresetPassword,
   uploadProfileImage,
   uploadBGImage,
+  socialSignInUpController,
 } = require("../helpers/Auth/clientAuthHelper");
 
 const {
@@ -148,6 +150,8 @@ router.post(
   ],
   createPendingWork
 );
+
+router.post("/social_sign_in", socialSignInUpController());
 
 // == == == == == == == == == == == == == == == == == == == ==
 //  PARAM ROUTES

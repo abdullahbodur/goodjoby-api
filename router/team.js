@@ -33,6 +33,7 @@ const {
   CreateReqresetPassword,
   uploadProfileImage,
   uploadBGImage,
+  socialSignInUpController,
 } = require("../helpers/Auth/teamAuthHelper");
 
 const {
@@ -163,6 +164,8 @@ router.post(
   blockedControl(Team),
   createJobAnouncement
 );
+
+router.post("/social_sign_in", socialSignInUpController);
 
 router.get(
   "/getAllJobAnouncement",

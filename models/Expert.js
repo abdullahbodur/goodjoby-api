@@ -31,6 +31,33 @@ const ExpertSchema = new Schema({
     ],
   },
 
+  password: {
+    type: String,
+    // required: [true, "Please provide a password"],
+    minlength: [8, "Password must be at least 8 characters"],
+    match: [
+      /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,1024}$/,
+      "Password must includes symbol,number,capital",
+    ],
+    select: false,
+  },
+
+  google_id: {
+    type: String,
+    unique: [
+      true,
+      "This Google Account was used by one. Please try another one",
+    ],
+  },
+
+  facebook_id: {
+    type: String,
+    unique: [
+      true,
+      "This Facebook Account was used by one. Please try another one",
+    ],
+  },
+
   job: {
     sector_id: {
       type: mongoose.Schema.ObjectId,
@@ -43,18 +70,6 @@ const ExpertSchema = new Schema({
       },
     ],
   },
-
-  password: {
-    type: String,
-    required: [true, "Please provide a password"],
-    minlength: [8, "Password must be at least 8 characters"],
-    match: [
-      /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,1024}$/,
-      "Password must includes symbol,number,capital",
-    ],
-    select: false,
-  },
-
   profile_image: {
     type: String,
     default: "defualtProfile.png",

@@ -32,6 +32,7 @@ const {
   CreateReqresetPassword,
   uploadProfileImage,
   uploadBGImage,
+  socialSignInUpController,
 } = require("../helpers/Auth/expertAuthHelper");
 
 const {
@@ -170,6 +171,7 @@ router.post(
   uploadedBIController
 );
 
+router.post("/social_sign_in", socialSignInUpController);
 // == == == == == == == == == == == == == == == == == == == ==
 //  PUT ROUTES
 // == == == == == == == == == == == == == == == == == == == ==

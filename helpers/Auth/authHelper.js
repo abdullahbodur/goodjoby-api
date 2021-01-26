@@ -2,11 +2,18 @@ const errorHandlerWrapper = require("express-async-handler");
 const {
   inputControl,
   comparePasswordInModel,
+  stringEliminate,
 } = require("../inputHelper/inputHelper");
 const CustomError = require("../error/CustomError");
 const sendMail = require("../libraries/sendMail");
 const { sendJwtToUser } = require("../authorization/tokenHelpers");
 const Admin = require("../../models/Admin");
+const {
+  googleTokenDecoder,
+  facebookTokenDecoder,
+} = require("../../middlewares/tokenControls/tokenControls");
+
+const { generateUniqueUsername } = require("../modelHelpers/modelHelper");
 
 // == == == == == == == == == == == == == == == == == == == ==
 //  REGISTER CLIENT - TEAM - EXPERT
@@ -33,7 +40,7 @@ const authSignIn = errorHandlerWrapper(async (model, req, res, next) => {
 
   const objectModel = await model.findOne({ email: email }).select("+password");
 
-  if (objectModel === null)
+  if (objectModel === null || !objectModel.password)
     return next(
       new CustomError("Email or Password is wrong, Please try again", 400)
     );
@@ -51,35 +58,6 @@ const authSignIn = errorHandlerWrapper(async (model, req, res, next) => {
   sendJwtToUser(objectModel, res);
 });
 
-// == == == == == == == == == == == == == == == == == == == ==
-//  SIGN IN ADMIN
-// == == == == == == == == == == == == == == == == == == == ==
-
-const adminSignInHelp = errorHandlerWrapper(async (req, res, next) => {
-  let { email, password } = req.body;
-
-  if (!inputControl) {
-    return next(new CustomError("Please, provide email and password", 400));
-  }
-
-  email.toLowerCase();
-
-  const admin = await Admin.findOne({ email: email }).select("+password");
-
-  if (objectModel === null) {
-    return next(
-      new CustomError("Email or Password is wrong, Please try again", 400)
-    );
-  }
-
-  if (!comparePasswordInModel(password, admin.password)) {
-    return next(
-      new CustomError("Email or Password is wrong, Please try again", 400)
-    );
-  }
-
-  sendJwtToUser(admin, res);
-});
 
 // == == == == == == == == == == == == == == == == == == == ==
 //  GET PROFILE OWNER ACCESS TEAM - CLIENT - EXPERT
@@ -205,6 +183,10 @@ const resetPasswordWithAuthHelper = errorHandlerWrapper(
   }
 );
 
+// == == == == == == == == == == == == == == == == == == == ==
+//  UPLOADED PROFILE PHOTO SAVER
+// == == == == == == == == == == == == == == == == == == == ==
+
 const uploadedPFSaver = errorHandlerWrapper(async (model, req, next, prop) => {
   let obj = {};
   obj[prop] = req.savedFileName;
@@ -217,6 +199,62 @@ const uploadedPFSaver = errorHandlerWrapper(async (model, req, next, prop) => {
   return next();
 });
 
+// == == == == == == == == == == == == == == == == == == == ==
+//  SIGN IN OR SIGN UP BY USING SOCIAL ACCOUNT // GOOGLE // FACEBOOK
+// == == == == == == == == == == == == == == == == == == == ==
+
+const socialSignInUp = errorHandlerWrapper(async (req, res, next, model) => {
+  /* 
+    req.body properties : 
+    --------------------
+    => account_type
+    => access_token
+    --------------------
+  */
+
+  const body = req.body;
+
+  if (!body.account_type || !body.access_token)
+    return next(new CustomError("Invalid values are given. Please check your values", 400));
+
+  let result;
+
+  if (body.account_type === "google")
+    result = googleTokenDecoder(body.access_token);
+  else if (body.account_type === "facebook"){
+    result = await facebookTokenDecoder(body.access_token);
+  }
+
+  else
+    return next(new CustomError("Account type is not founded. Please check again", 400));
+
+  
+  if (!result.success)
+    return next(new CustomError("Authorization error. Please check your identity", 400));
+  
+  
+  try {
+    // check there is an user with that property
+    const objectModel = await model.findOne(result.user);
+
+    // if user is found create an access token and respond
+    if (objectModel) sendJwtToUser(objectModel, res);
+    // otherwise create new user by using token information
+    else {
+      
+      const proposedUsername = stringEliminate(result.user.name);
+      const {success,username} = await generateUniqueUsername(model, proposedUsername);
+      if(!success) return next("Username is not created. Please try again",400) 
+      const user = await model.create({  username ,...result.user});
+
+      return sendJwtToUser(user, res);
+    }
+  } catch (error) {
+    console.log(error);
+    return next(new CustomError("Something wrong! Please try again", 400));
+  }
+});
+
 module.exports = {
   authRegister,
   authSignIn,
@@ -224,4 +262,5 @@ module.exports = {
   forgotPassword,
   resetPasswordWithAuthHelper,
   uploadedPFSaver,
+  socialSignInUp,
 };
