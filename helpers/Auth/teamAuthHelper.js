@@ -80,6 +80,16 @@ const uploadBGImage = () => {
   };
 };
 
+// == == == == == == == == == == == == == == == == == == == ==
+//  SOCIAL SIGN IN - UP CONTROLER
+// == == == == == == == == == == == == == == == == == == == ==
+
+const socialSignInUpController = () => {
+  return (req, res, next) => {
+    socialSignInUp(req, res, next, Team);
+  };
+};
+
 module.exports = {
   teamRegister,
   teamSignIn,
@@ -88,4 +98,5 @@ module.exports = {
   CreateReqresetPassword,
   uploadProfileImage,
   uploadBGImage,
+  socialSignInUpController,
 };

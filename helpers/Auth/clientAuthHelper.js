@@ -6,15 +6,14 @@ const {
   forgotPassword,
   resetPasswordWithAuthHelper,
   uploadedPFSaver,
+  socialSignInUp,
 } = require("./authHelper");
 
 const Client = require("../../models/Client");
 
-
 // == == == == == == == == == == == == == == == == == == == ==
 //  CLIENT REGISTER ACCOUNT
 // == == == == == == == == == == == == == == == == == == == ==
-
 
 const clientRegister = function () {
   return errorHandlerWrapper(async (req, res, next) => {
@@ -22,7 +21,6 @@ const clientRegister = function () {
     next();
   });
 };
-
 
 // == == == == == == == == == == == == == == == == == == == ==
 //  CLIENT SIGN IN ACCOUNT
@@ -34,20 +32,18 @@ const clientSignIn = () => {
   };
 };
 
-
 // == == == == == == == == == == == == == == == == == == == ==
 //  CLIENT GET PROFILE OWNER ACCESS
 // == == == == == == == == == == == == == == == == == == == ==
 
 const profileOwnerAccess = () => {
   return (req, res, next) => {
-    profileOwnerAccessControl(req, Client, next,"client");
+    profileOwnerAccessControl(req, Client, next, "client");
   };
 };
 
-
 // == == == == == == == == == == == == == == == == == == == ==
-//  CREATE REQUEST FORGOT PASSWORD FOR CLIENT 
+//  CREATE REQUEST FORGOT PASSWORD FOR CLIENT
 // == == == == == == == == == == == == == == == == == == == ==
 
 const CreateReqforgotPassword = () => {
@@ -55,7 +51,6 @@ const CreateReqforgotPassword = () => {
     forgotPassword(Client, req, res, next, "client");
   };
 };
-
 
 // == == == == == == == == == == == == == == == == == == == ==
 //  CREATE NEW PASSWORD IF HAS A TOKEN FOR CLIENT
@@ -66,29 +61,36 @@ const CreateReqresetPassword = () => {
     resetPasswordWithAuthHelper(req, next, Client);
   };
 };
- 
 
 // == == == == == == == == == == == == == == == == == == == ==
 //  UPLOAD PROFILE IMAGE FOR CLIENT
 // == == == == == == == == == == == == == == == == == == == ==
 
-const uploadProfileImage = ()=>{
-  return (req,res,next)=>{
-    uploadedPFSaver(Client,req,next,"profile_image")
-  }
-}
+const uploadProfileImage = () => {
+  return (req, res, next) => {
+    uploadedPFSaver(Client, req, next, "profile_image");
+  };
+};
 
 // == == == == == == == == == == == == == == == == == == == ==
 //  UPLOAD BACKGROUND IMAGE FOR CLIENT
 // == == == == == == == == == == == == == == == == == == == ==
 
-const uploadBGImage = ()=>{
-  return (req,res,next)=>{
-    uploadedPFSaver(Client,req,next,"background_image")
-  }
-}
+const uploadBGImage = () => {
+  return (req, res, next) => {
+    uploadedPFSaver(Client, req, next, "background_image");
+  };
+};
 
+// == == == == == == == == == == == == == == == == == == == ==
+//  SOCIAL SIGN IN - UP CONTROLER
+// == == == == == == == == == == == == == == == == == == == ==
 
+const socialSignInUpController = () => {
+  return (req, res, next) => {
+    socialSignInUp(req, res, next, Client);
+  };
+};
 
 module.exports = {
   clientRegister,
@@ -97,5 +99,6 @@ module.exports = {
   CreateReqforgotPassword,
   CreateReqresetPassword,
   uploadProfileImage,
-  uploadBGImage
+  uploadBGImage,
+  socialSignInUpController,
 };

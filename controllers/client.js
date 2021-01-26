@@ -440,6 +440,15 @@ const getMessages = (req, res, next) => {
   res.status(200).sendFile(path.join(__dirname, "../public/index.html"));
 };
 
+const socialIDController = (req, res, next) => {
+  res.status(200).json({
+    sucess: true,
+    account_id: req.body.account_id,
+    account_type: req.body.account_type,
+    message: "This account is available for register",
+  });
+};
+
 module.exports = {
   profileClient,
   logoutClient,
@@ -460,4 +469,5 @@ module.exports = {
   cancelWorkAccept,
   getWorks,
   getMessages,
+  socialIDController,
 };

@@ -6,6 +6,7 @@ const {
   forgotPassword,
   resetPasswordWithAuthHelper,
   uploadedPFSaver,
+  socialSignInUp,
 } = require("./authHelper");
 
 const Expert = require("../../models/Expert");
@@ -81,6 +82,15 @@ const uploadBGImage = () => {
   };
 };
 
+// == == == == == == == == == == == == == == == == == == == ==
+//  SOCIAL SIGN IN - UP CONTROLER
+// == == == == == == == == == == == == == == == == == == == ==
+
+const socialSignInUpController = () => {
+  return (req, res, next) => {
+    socialSignInUp(req, res, next, Expert);
+  };
+};
 module.exports = {
   expertRegister,
   expertSignIn,
@@ -89,4 +99,5 @@ module.exports = {
   CreateReqresetPassword,
   uploadProfileImage,
   uploadBGImage,
+  socialSignInUpController,
 };

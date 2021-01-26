@@ -112,9 +112,31 @@ const getTokenForAnyPurpose = (arr, expire) => {
   return arr;
 };
 
+// == == == == == == == == == == == == == == == == == == == ==
+// USERNAME GENERATOR
+// == == == == == == == == == == == == == == == == == == == ==
+
+const generateUniqueUsername = async (model, proposedUname) => {
+  try {
+    return model.findOne({ username: proposedUname }).then((account) => {
+      if (account) {
+        proposedUname += Math.floor(Math.random() * 100 + 1);
+
+        return generateUniqueUsername(model, proposedUname);
+      }
+
+      return { success: true, username: proposedUname };
+    });
+  } catch (error) {
+    console.log(error);
+    return { success: false, username: proposedUname };
+  }
+};
+
 module.exports = {
   hashPassword,
   generateJWTFromUser,
   getResetPasswordTokenFromUser,
   getTokenForAnyPurpose,
+  generateUniqueUsername,
 };
