@@ -13,7 +13,7 @@ const adminRegisterHelper = errorHandlerWrapper(async (req, res, next) => {
     return next(
       new CustomError("Your Authorization is not supported this event", 403)
     );
-  res.admin = await authRegister(Admin, req, res);
+  res.admin = await authRegister(Admin, req, res, next);
   next();
 });
 

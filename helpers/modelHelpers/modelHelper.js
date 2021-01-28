@@ -120,7 +120,7 @@ const generateUniqueUsername = async (model, proposedUname) => {
   try {
     return model.findOne({ username: proposedUname }).then((account) => {
       if (account) {
-        proposedUname += Math.floor(Math.random() * 100 + 1);
+        proposedUname += Math.floor(Math.random() * 1000 + 1);
 
         return generateUniqueUsername(model, proposedUname);
       }

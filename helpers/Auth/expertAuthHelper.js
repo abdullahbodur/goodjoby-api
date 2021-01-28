@@ -17,7 +17,7 @@ const Expert = require("../../models/Expert");
 
 const expertRegister = function () {
   return errorHandlerWrapper(async (req, res, next) => {
-    res.data = await authRegister(Expert, req, res);
+    res.data = await authRegister(Expert, req, res, next);
     next();
   });
 };
