@@ -15,7 +15,7 @@ const Team = require("../../models/Team");
 
 const teamRegister = function () {
   return errorHandlerWrapper(async (req, res, next) => {
-    res.data = await authRegister(Team, req, res);
+    res.data = await authRegister(Team, req, res,next);
     next();
   });
 };

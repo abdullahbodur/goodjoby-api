@@ -17,7 +17,7 @@ const Client = require("../../models/Client");
 
 const clientRegister = function () {
   return errorHandlerWrapper(async (req, res, next) => {
-    res.data = await authRegister(Client, req, res);
+    res.data = await authRegister(Client, req, res, next);
     next();
   });
 };

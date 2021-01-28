@@ -19,11 +19,32 @@ const { generateUniqueUsername } = require("../modelHelpers/modelHelper");
 //  REGISTER CLIENT - TEAM - EXPERT
 // == == == == == == == == == == == == == == == == == == == ==
 
-const authRegister = errorHandlerWrapper(async (model, req, res) => {
-  const data = req.body;
-  const objectModel = await model.create(data);
+const authRegister = errorHandlerWrapper(async (model, req, res, next) => {
+  let { name, email, password, username } = req.body;
 
-  sendJwtToUser(objectModel, res);
+  try {
+
+    if (!name || !email || !password)
+      return next(
+        new CustomError(
+          "Some values are missing. Please check your values",
+          400
+        )
+      );
+    
+    if(model !== Admin) username = username ? username : generateUniqueUsername(name);
+
+    const objectModel = await model.create({
+      name,
+      email,
+      password,
+      username,
+    });
+
+    sendJwtToUser(objectModel, res);
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 // == == == == == == == == == == == == == == == == == == == ==
@@ -57,7 +78,6 @@ const authSignIn = errorHandlerWrapper(async (model, req, res, next) => {
 
   sendJwtToUser(objectModel, res);
 });
-
 
 // == == == == == == == == == == == == == == == == == == == ==
 //  GET PROFILE OWNER ACCESS TEAM - CLIENT - EXPERT
@@ -215,24 +235,26 @@ const socialSignInUp = errorHandlerWrapper(async (req, res, next, model) => {
   const body = req.body;
 
   if (!body.account_type || !body.access_token)
-    return next(new CustomError("Invalid values are given. Please check your values", 400));
+    return next(
+      new CustomError("Invalid values are given. Please check your values", 400)
+    );
 
   let result;
 
   if (body.account_type === "google")
     result = googleTokenDecoder(body.access_token);
-  else if (body.account_type === "facebook"){
+  else if (body.account_type === "facebook") {
     result = await facebookTokenDecoder(body.access_token);
-  }
+  } else
+    return next(
+      new CustomError("Account type is not founded. Please check again", 400)
+    );
 
-  else
-    return next(new CustomError("Account type is not founded. Please check again", 400));
-
-  
   if (!result.success)
-    return next(new CustomError("Authorization error. Please check your identity", 400));
-  
-  
+    return next(
+      new CustomError("Authorization error. Please check your identity", 400)
+    );
+
   try {
     // check there is an user with that property
     const objectModel = await model.findOne(result.user);
@@ -241,11 +263,14 @@ const socialSignInUp = errorHandlerWrapper(async (req, res, next, model) => {
     if (objectModel) sendJwtToUser(objectModel, res);
     // otherwise create new user by using token information
     else {
-      
       const proposedUsername = stringEliminate(result.user.name);
-      const {success,username} = await generateUniqueUsername(model, proposedUsername);
-      if(!success) return next("Username is not created. Please try again",400) 
-      const user = await model.create({  username ,...result.user});
+      const { success, username } = await generateUniqueUsername(
+        model,
+        proposedUsername
+      );
+      if (!success)
+        return next("Username is not created. Please try again", 400);
+      const user = await model.create({ username, ...result.user });
 
       return sendJwtToUser(user, res);
     }
