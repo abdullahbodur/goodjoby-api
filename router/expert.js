@@ -22,6 +22,8 @@ const {
   cancelWork,
   getAllPropJobAnnouncements,
   cancelJobApplication,
+  verificationSendController,
+  acceptingVerificationController,
 } = require("../controllers/expert");
 
 const {
@@ -33,6 +35,8 @@ const {
   uploadProfileImage,
   uploadBGImage,
   socialSignInUpController,
+  verificationTokenAcceptHandler,
+  verificationTokenHandler,
 } = require("../helpers/Auth/expertAuthHelper");
 
 const {
@@ -87,13 +91,46 @@ const uploadDocuments = uploadFile(
   "40mb"
 );
 
+// ==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S
+//  ******** GET REQUESTS ******** GET REQUESTS ********
+// ==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S
+
 // == == == == == == == == == == == == == == == == == == == ==
-//  GET REQUESTS
+//  GET ALL EXPERT USERS
+// == == == == == == == == == == == == == == == == == == == ==
+//  => ADDITION HEADERS:
+//   * none
+// == == == == == == == == == == == == == == == == == == == ==
+//  => BODY ATTRIBUTES:
+//    *none
 // == == == == == == == == == == == == == == == == == == == ==
 
 router.get("/all", getAllExpert);
 
+// == == == == == == == == == == == == == == == == == == == ==
+//  LOGOUT
+// == == == == == == == == == == == == == == == == == == == ==
+//  => ADDITION HEADERS:
+//   * Connection = accessToken
+// == == == == == == == == == == == == == == == == == == == ==
+//  => BODY ATTRIBUTES:
+//    *none
+// == == == == == == == == == == == == == == == == == == == ==
+
 router.get("/logout", tokenControl, logoutExpert);
+
+// == == == == == == == == == == == == == == == == == == == ==
+//  SEARCH JOB
+// == == == == == == == == == == == == == == == == == == == ==
+//  => ADDITION HEADERS:
+//   * Connection = accessToken
+// == == == == == == == == == == == == == == == == == == == ==
+//  => BODY ATTRIBUTES:
+//    *none
+// == == == == == == == == == == == == == == == == == == == ==
+//  => QUERY ATTRIBUTES
+//    * search
+// == == == == == == == == == == == == == == == == == == == ==
 
 router.get(
   "/search_job",
@@ -108,6 +145,16 @@ router.get(
   getSearchSubJob
 );
 
+// == == == == == == == == == == == == == == == == == == == ==
+//  GET ALL PROP WORKS
+// == == == == == == == == == == == == == == == == == == == ==
+//  => ADDITION HEADERS:
+//   * Connection = accessToken
+// == == == == == == == == == == == == == == == == == == == ==
+//  => BODY ATTRIBUTES:
+//    *none
+// == == == == == == == == == == == == == == == == == == == ==
+
 router.get(
   "/get_all_prop_works",
   [
@@ -119,11 +166,34 @@ router.get(
   getAllPropWorks
 );
 
+// == == == == == == == == == == == == == == == == == == == ==
+//  GET ALL PROP JOB ANNOUNCEMENTS
+// == == == == == == == == == == == == == == == == == == == ==
+//  => ADDITION HEADERS:
+//   * Connection = accessToken
+// == == == == == == == == == == == == == == == == == == == ==
+//  => BODY ATTRIBUTES:
+//    *none
+// == == == == == == == == == == == == == == == == == == == ==
+
 router.get(
   "/get-all-prop-job-announcements",
   [tokenControl, tokenRoleControl("goodjoby.api.exp"), blockedControl(Expert)],
   getAllPropJobAnnouncements
 );
+
+// == == == == == == == == == == == == == == == == == == == ==
+//  GET ALL REQUESTED WORKS
+// == == == == == == == == == == == == == == == == == == == ==
+//  => ADDITION HEADERS:
+//   * Connection = accessToken
+// == == == == == == == == == == == == == == == == == == == ==
+//  => BODY ATTRIBUTES:
+//    *none
+// == == == == == == == == == == == == == == == == == == == ==
+//  => QUERY ATTRIBUTES
+//    * limit
+// == == == == == == == == == == == == == == == == == == == ==
 
 router.get("/get_all_requested_works", [
   tokenControl,
@@ -132,22 +202,124 @@ router.get("/get_all_requested_works", [
   getRequestedWorks,
 ]);
 
+// == == == == == == == == == == == == == == == == == == == ==
+//  GET ALL WORKS
+// == == == == == == == == == == == == == == == == == == == ==
+//  => ADDITION HEADERS:
+//   * Connection = accessToken
+// == == == == == == == == == == == == == == == == == == == ==
+//  => BODY ATTRIBUTES:
+//    *none
+// == == == == == == == == == == == == == == == == == == == ==
+
 router.get("/get-all-works", [
   tokenControl,
   tokenRoleControl("goodjoby.api.exp"),
   getAllWorks,
 ]);
+
 // == == == == == == == == == == == == == == == == == == == ==
-//  POST REQUESTS
+//  VERIFICATE USER ACCOUNT by USING EMAIL VERIFICATION
+// == == == == == == == == == == == == == == == == == == == ==
+//  => ADDITION HEADERS:
+//   * Connection = accessToken
+// == == == == == == == == == == == == == == == == == == == ==
+//  => BODY ATTRIBUTES:
+//    *none
+// == == == == == == == == == == == == == == == == == == == ==
+
+router.get(
+  "/verificate",
+  [
+    tokenControl,
+    blockedControl(Expert),
+    tokenRoleControl("goodjoby.api.exp"),
+    verificationTokenHandler(),
+  ],
+  verificationSendController
+);
+
+// == == == == == == == == == == == == == == == == == == == ==
+//  ACCEPTING VERIFICATION LINK
+// == == == == == == == == == == == == == == == == == == == ==
+//  => ADDITION HEADERS:
+//   * none
+// == == == == == == == == == == == == == == == == == == == ==
+//  => BODY ATTRIBUTES:
+//    *none
+// == == == == == == == == == == == == == == == == == == == ==
+
+router.get(
+  "/verificate_user",
+  verificationTokenAcceptHandler(),
+  acceptingVerificationController
+);
+
+// ==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S
+//  ******** POST REQUESTS ******** POST REQUESTS ********
+// ==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S
+
+// == == == == == == == == == == == == == == == == == == == ==
+//  REGISTER EXPERT ACCOUNT
+// == == == == == == == == == == == == == == == == == == == ==
+//  => ADDITION HEADERS:
+//   * none
+// == == == == == == == == == == == == == == == == == == == ==
+//  => BODY ATTRIBUTES:
+//    * name
+//    * password
+//    * email
+//    * username (optional = auto generate)
 // == == == == == == == == == == == == == == == == == == == ==
 
 router.post("/register", expertRegister(), registerExpert);
 
+// == == == == == == == == == == == == == == == == == == == ==
+//  SIGN IN EXPERT ACCOUNT
+// == == == == == == == == == == == == == == == == == == == ==
+//  => ADDITION HEADERS:
+//   * none
+// == == == == == == == == == == == == == == == == == == == ==
+//  => BODY ATTRIBUTES:
+//    * password
+//    * email
+// == == == == == == == == == == == == == == == == == == == ==
+
 router.post("/login", expertSignIn(), signExpert);
+
+// == == == == == == == == == == == == == == == == == == == ==
+//  FORGOT PASSWORD EXPERT ACCOUNT
+// == == == == == == == == == == == == == == == == == == == ==
+//  => ADDITION HEADERS:
+//   * none
+// == == == == == == == == == == == == == == == == == == == ==
+//  => BODY ATTRIBUTES:
+//    * email or username
+// == == == == == == == == == == == == == == == == == == == ==
 
 router.post("/forgotpassword", CreateReqforgotPassword(), forgotPasswordExpert);
 
+// == == == == == == == == == == == == == == == == == == == ==
+//  RESET PASSWORD EXPERT ACCOUNT
+// == == == == == == == == == == == == == == == == == == == ==
+//  => ADDITION HEADERS:
+//   * none
+// == == == == == == == == == == == == == == == == == == == ==
+//  => BODY ATTRIBUTES:
+//    * email or username
+// == == == == == == == == == == == == == == == == == == == ==
+
 router.post("/resetpassword", CreateReqresetPassword(), resetPassword);
+
+// == == == == == == == == == == == == == == == == == == == ==
+//  UPLOAD PROFILE IMAGE
+// == == == == == == == == == == == == == == == == == == == ==
+//  => ADDITION HEADERS:
+//   * Connection = accessToken
+// == == == == == == == == == == == == == == == == == == == ==
+//  => BODY ATTRIBUTES:
+//    * profile_image (form-data)
+// == == == == == == == == == == == == == == == == == == == ==
 
 router.post(
   "/uploadProfileImage",
@@ -160,6 +332,16 @@ router.post(
   uploadedPIController
 );
 
+// == == == == == == == == == == == == == == == == == == == ==
+//  UPLOAD BACKGROUND IMAGE
+// == == == == == == == == == == == == == == == == == == == ==
+//  => ADDITION HEADERS:
+//   * Connection = accessToken
+// == == == == == == == == == == == == == == == == == == == ==
+//  => BODY ATTRIBUTES:
+//    * background_image (form-data)
+// == == == == == == == == == == == == == == == == == == == ==
+
 router.post(
   "/uploadBackgroundImage",
   [
@@ -171,9 +353,32 @@ router.post(
   uploadedBIController
 );
 
-router.post("/social_sign_in", socialSignInUpController);
 // == == == == == == == == == == == == == == == == == == == ==
-//  PUT ROUTES
+//  SOCIAL SIGN IN
+// == == == == == == == == == == == == == == == == == == == ==
+//  => ADDITION HEADERS:
+//   * none
+// == == == == == == == == == == == == == == == == == == == ==
+//  => BODY ATTRIBUTES:
+//    * account_tye
+//    * accessToken
+// == == == == == == == == == == == == == == == == == == == ==
+
+router.post("/social_sign_in", socialSignInUpController);
+
+// ==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S
+//  ********** PUT REQUESTS ********** PUT REQUESTS **********
+// ==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S
+
+// == == == == == == == == == == == == == == == == == == == ==
+//  ADD NEW JOBS - EXPERT
+// == == == == == == == == == == == == == == == == == == == ==
+//  => ADDITION HEADERS:
+//   * Connection = accessToken
+// == == == == == == == == == == == == == == == == == == == ==
+//  => BODY ATTRIBUTES:
+//    * sector_id
+//    * position
 // == == == == == == == == == == == == == == == == == == == ==
 
 router.put(
@@ -183,14 +388,34 @@ router.put(
   addNewJobs
 );
 
+// == == == == == == == == == == == == == == == == == == == ==
+//  CANCEL JOB APPLICATION - EXPERT
+// == == == == == == == == == == == == == == == == == == == ==
+//  => ADDITION HEADERS:
+//   * Connection = accessToken
+// == == == == == == == == == == == == == == == == == == == ==
+//  => BODY ATTRIBUTES:
+//    * application_id
+// == == == == == == == == == == == == == == == == == == == ==
+
 router.put(
   "/cancel_job_application",
   [tokenControl, tokenRoleControl("goodjoby.api.exp"), blockedControl(Expert)],
   cancelJobApplication
 );
 
+// ==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S
+//  ******** PARAMS REQUESTS ******** PARAMS REQUESTS ********
+// ==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S
+
 // == == == == == == == == == == == == == == == == == == == ==
-//  PARAM ROUTES
+//  CANCEL WORK
+// == == == == == == == == == == == == == == == == == == == ==
+//  => ADDITION HEADERS:
+//   * Connection = accessToken
+// == == == == == == == == == == == == == == == == == == == ==
+//  => PARAM ATTRIBUTES:
+//    * work_id
 // == == == == == == == == == == == == == == == == == == == ==
 
 router.put(
@@ -204,7 +429,27 @@ router.put(
   cancelWork
 );
 
+// == == == == == == == == == == == == == == == == == == == ==
+//  CANCEL WORK ACCEPTS
+// == == == == == == == == == == == == == == == == == == == ==
+//  => ADDITION HEADERS:
+//   * none
+// == == == == == == == == == == == == == == == == == == == ==
+//  => PARAM ATTRIBUTES:
+//    * work_id
+// == == == == == == == == == == == == == == == == == == == ==
+
 router.get("/cancel_work_accept/:work_id", cancelWrkAccept, cancelWorkAccept);
+
+// == == == == == == == == == == == == == == == == == == == ==
+//  CANCEL EXPERT REQUESTS
+// == == == == == == == == == == == == == == == == == == == ==
+//  => ADDITION HEADERS:
+//   * Connection = accessToken
+// == == == == == == == == == == == == == == == == == == == ==
+//  => PARAM ATTRIBUTES:
+//    * req_id
+// == == == == == == == == == == == == == == == == == == == ==
 
 router.put(
   "/cancel_expert_request/:req_id",
@@ -217,6 +462,21 @@ router.put(
   cancelExpertRequest
 );
 
+// == == == == == == == == == == == == == == == == == == == ==
+//  CREATE EXPERT REQUESTS
+// == == == == == == == == == == == == == == == == == == == ==
+//  => ADDITION HEADERS:
+//   * Connection = accessToken
+// == == == == == == == == == == == == == == == == == == == ==
+//  => PARAM ATTRIBUTES:
+//    * id
+// == == == == == == == == == == == == == == == == == == == ==
+//  => BODY ATTRIBUTES:
+//    * title
+//    * content
+//    * price
+// == == == == == == == == == == == == == == == == == == == ==
+
 router.post(
   "/create_expert_request/:id",
   [
@@ -227,6 +487,19 @@ router.post(
   ],
   createExpertRequest
 );
+
+// == == == == == == == == == == == == == == == == == == == ==
+//  ADD DOCUMENT FOR APPLICATION
+// == == == == == == == == == == == == == == == == == == == ==
+//  => ADDITION HEADERS:
+//   * Connection = accessToken
+// == == == == == == == == == == == == == == == == == == == ==
+//  => PARAM ATTRIBUTES:
+//    * id
+// == == == == == == == == == == == == == == == == == == == ==
+//  => BODY ATTRIBUTES:
+//    * document
+// == == == == == == == == == == == == == == == == == == == ==
 
 router.post(
   "/add_document_for_application/:id",
@@ -239,8 +512,24 @@ router.post(
   uploadNewDocuments
 );
 
+// == == == == == == == == == == == == == == == == == == == ==
+//  CREATE NEW APPLICATION
+// == == == == == == == == == == == == == == == == == == == ==
+//  => ADDITION HEADERS:
+//   * Connection = accessToken
+// == == == == == == == == == == == == == == == == == == == ==
+//  => PARAM ATTRIBUTES:
+//    * id
+// == == == == == == == == == == == == == == == == == == == ==
+//  => BODY ATTRIBUTES:
+//    * title
+//    * content
+//    * team
+//    * documents
+// == == == == == == == == == == == == == == == == == == == ==
+
 router.post(
-  "/createNewApplication/:id",
+  "/create_new_application/:id",
   [
     tokenControl,
     dataControl,
@@ -249,6 +538,19 @@ router.post(
   ],
   createnewApplication
 );
+
+// == == == == == == == == == == == == == == == == == == == ==
+//  GET EXPERT BY USING USERNAME
+// == == == == == == == == == == == == == == == == == == == ==
+//  => ADDITION HEADERS:
+//   * none
+// == == == == == == == == == == == == == == == == == == == ==
+//  => PARAM ATTRIBUTES:
+//    * username
+// == == == == == == == == == == == == == == == == == == == ==
+//  => BODY ATTRIBUTES:
+//    * none
+// == == == == == == == == == == == == == == == == == == == ==
 
 router.get(
   "/:username",

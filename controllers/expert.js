@@ -293,6 +293,28 @@ const cancelJobApplication = errorHandlerWrapper(async (req, res, next) => {
   });
 });
 
+// == == == == == == == == == == == == == == == == == == == ==
+//  SENDING VERIFICATE CONTROLLER
+// == == == == == == == == == == == == == == == == == == == ==
+
+const verificationSendController = (req, res, next) => {
+  res.status(200).json({
+    success: true,
+    message: "Email sended your mail. Please check your Inbox",
+  });
+};
+
+// == == == == == == == == == == == == == == == == == == == ==
+//  ACCEPTING VERIFICATE CONTROLLER
+// == == == == == == == == == == == == == == == == == == == ==
+
+const acceptingVerificationController = (req, res, next) => {
+  res.status(200).json({
+    success: true,
+    message: "Your account verification is successfuly",
+  });
+};
+
 module.exports = {
   profileExpert,
   logoutExpert,
@@ -314,4 +336,6 @@ module.exports = {
   cancelWork,
   getAllPropJobAnnouncements,
   cancelJobApplication,
+  verificationSendController,
+  acceptingVerificationController,
 };

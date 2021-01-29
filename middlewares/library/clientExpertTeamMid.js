@@ -213,9 +213,7 @@ const cancelWrkAccept = errorHandlerWrapper(async (req, res, next) => {
   });
 
   if (!work)
-    return next(
-      new CustomError("There is no work with your given information", 400)
-    );
+    return next(new CustomError("There is no work with your given information", 400));
 
   work.state = parseInt(process.env.STATE_PASSIVE);
   work.cancel_token = undefined;

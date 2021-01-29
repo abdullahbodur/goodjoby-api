@@ -14,6 +14,8 @@ const {
 } = require("../../middlewares/tokenControls/tokenControls");
 
 const { generateUniqueUsername } = require("../modelHelpers/modelHelper");
+const Client = require("../../models/Client");
+const Expert = require("../../models/Expert");
 
 // == == == == == == == == == == == == == == == == == == == ==
 //  REGISTER CLIENT - TEAM - EXPERT
@@ -23,7 +25,6 @@ const authRegister = errorHandlerWrapper(async (model, req, res, next) => {
   let { name, email, password, username } = req.body;
 
   try {
-
     if (!name || !email || !password)
       return next(
         new CustomError(
@@ -31,8 +32,9 @@ const authRegister = errorHandlerWrapper(async (model, req, res, next) => {
           400
         )
       );
-    
-    if(model !== Admin) username = username ? username : generateUniqueUsername(name);
+
+    if (model !== Admin)
+      username = username ? username : generateUniqueUsername(name);
 
     const objectModel = await model.create({
       name,
@@ -143,10 +145,9 @@ const forgotPassword = errorHandlerWrapper(
         new CustomError("There is no user that given information", 400)
       );
     }
+
     const token = objectModel.getTokenFromUser();
     await objectModel.save();
-
-    console.log(token);
 
     // Change HTTP WHEN YOU ARE DEPLOYING !!!
 
@@ -280,6 +281,89 @@ const socialSignInUp = errorHandlerWrapper(async (req, res, next, model) => {
   }
 });
 
+// == == == == == == == == == == == == == == == == == == == ==
+//   CREATE VERIFICATION NEW REQUEST
+// == == == == == == == == == == == == == == == == == == == ==
+
+const verificationNewRequest = errorHandlerWrapper(async (model, req, next) => {
+  const { DOMAIN_URI, PORT } = process.env;
+  const user = req.user;
+
+  if (!user.client_id)
+    return next(new CustomError("Invalid token. Please try again", 400));
+
+  const userObject = await model.findById(user.client_id);
+
+  if (!userObject)
+    return next(new CustomError("Invalid token. User is not found", 400));
+
+  const token = userObject.getTokenFromUser();
+
+  await userObject.save();
+
+  // // Change HTTP WHEN YOU ARE DEPLOYING !!!
+
+  const name =
+    model === Client ? "client" : model === Expert ? "expert" : "team";
+
+  const verificationUrl = `http://${DOMAIN_URI}${PORT}/api/${name}/verificate_user?verificationToken=${token}`;
+
+  try {
+    await sendMail({
+      from: process.env.SMTP_USER,
+      to: userObject.email,
+      subject: "Goodjoby Verification Mail",
+      html: AuthTemplates.verficiationMail(verificationUrl, userObject.name),
+    });
+  } catch (error) {
+    userObject.token = undefined;
+    userObject.tokenExpire = undefined;
+
+    await userObject.save();
+
+    return next(new CustomError("Email could not send to client", 500));
+  }
+
+  return next();
+});
+
+// == == == == == == == == == == == == == == == == == == == ==
+//   ACCEPT VERIFICATION TOKEN
+// == == == == == == == == == == == == == == == == == == == ==
+
+const acceptVerificationToken = errorHandlerWrapper(
+  async (model, req, next) => {
+    const { verificationToken } = req.query;
+
+    if (!verificationToken)
+      return next(
+        new CustomError(
+          "Invalid inputs are given. Please check your inputs",
+          400
+        )
+      );
+
+    const objectModel = await model.findOne({
+      token: verificationToken,
+      tokenExpire: { $gt: Date.now() },
+    });
+
+    if (!objectModel) {
+      return next(new CustomError("Ops, token is invalid or expired", 400));
+    }
+    try {
+      objectModel.creation_code = process.env.USER_VERIFICATED;
+      objectModel.token = undefined;
+      objectModel.tokenExpire = undefined;
+
+      await objectModel.save();
+    } catch (error) {
+      return next(error);
+    }
+
+    return next();
+  }
+);
 module.exports = {
   authRegister,
   authSignIn,
@@ -288,4 +372,6 @@ module.exports = {
   resetPasswordWithAuthHelper,
   uploadedPFSaver,
   socialSignInUp,
+  verificationNewRequest,
+  acceptVerificationToken,
 };
