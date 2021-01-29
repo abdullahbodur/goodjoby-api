@@ -143,6 +143,11 @@ const ExpertSchema = new Schema({
     type: Boolean,
     default: false,
   },
+  creation_code: {
+    type: Number,
+    default: 1,
+    enum: [1, 2, 3, 4],
+  },
 });
 
 ExpertSchema.methods.getTokenFromUser = function () {

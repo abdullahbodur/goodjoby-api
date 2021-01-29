@@ -63,7 +63,8 @@ const generateJWTFromUser = (thisObject) => {
     aud: "api.goodjoby",
     role: "auth_user",
     device_id: "DEVICE ID",
-    stg: thisObject.stage ? thisObject.stage : undefined,
+    stg: thisObject.stage || undefined,
+    cr_code: thisObject.creation_code || undefined,
   };
 
   const token = jwt.sign(

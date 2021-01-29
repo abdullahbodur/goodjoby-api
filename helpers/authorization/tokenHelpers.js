@@ -24,7 +24,8 @@ const sendJwtToUser = (user, res) => {
       name: user.name,
       role: user.role,
       email: user.email,
-      stage : user.stage ? user.stage : undefined
+      stage : user.stage || undefined,
+      creation_code : user.creation_code || undefined
     });
 };
 

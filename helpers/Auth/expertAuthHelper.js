@@ -7,6 +7,8 @@ const {
   resetPasswordWithAuthHelper,
   uploadedPFSaver,
   socialSignInUp,
+  acceptVerificationToken,
+  verificationNewRequest,
 } = require("./authHelper");
 
 const Expert = require("../../models/Expert");
@@ -16,10 +18,9 @@ const Expert = require("../../models/Expert");
 // == == == == == == == == == == == == == == == == == == == ==
 
 const expertRegister = function () {
-  return errorHandlerWrapper(async (req, res, next) => {
-    res.data = await authRegister(Expert, req, res, next);
-    next();
-  });
+  return (req, res, next) => {
+    authRegister(Expert, req, res, next);
+  };
 };
 
 // == == == == == == == == == == == == == == == == == == == ==
@@ -91,6 +92,27 @@ const socialSignInUpController = () => {
     socialSignInUp(req, res, next, Expert);
   };
 };
+
+// == == == == == == == == == == == == == == == == == == == ==
+//  VERIFICATION TOKEN HANDLER
+// == == == == == == == == == == == == == == == == == == == ==
+
+const verificationTokenHandler = () => {
+  return (req, res, next) => {
+    verificationNewRequest(Expert, req, next);
+  };
+};
+
+// == == == == == == == == == == == == == == == == == == == ==
+//  VERIFICATION ACCEPT HANDLER
+// == == == == == == == == == == == == == == == == == == == ==
+
+const verificationTokenAcceptHandler = () => {
+  return (req, res, next) => {
+    acceptVerificationToken(Expert, req, next);
+  };
+};
+
 module.exports = {
   expertRegister,
   expertSignIn,
@@ -100,4 +122,6 @@ module.exports = {
   uploadProfileImage,
   uploadBGImage,
   socialSignInUpController,
+  verificationTokenHandler,
+  verificationTokenAcceptHandler,
 };

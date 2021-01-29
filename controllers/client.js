@@ -440,12 +440,38 @@ const getMessages = (req, res, next) => {
   res.status(200).sendFile(path.join(__dirname, "../public/index.html"));
 };
 
+// == == == == == == == == == == == == == == == == == == == ==
+//  SOCIAL ID CONTROLLER
+// == == == == == == == == == == == == == == == == == == == ==
+
 const socialIDController = (req, res, next) => {
   res.status(200).json({
     sucess: true,
     account_id: req.body.account_id,
     account_type: req.body.account_type,
     message: "This account is available for register",
+  });
+};
+
+// == == == == == == == == == == == == == == == == == == == ==
+//  SENDING VERIFICATE CONTROLLER
+// == == == == == == == == == == == == == == == == == == == ==
+
+const verificationSendController = (req, res, next) => {
+  res.status(200).json({
+    success: true,
+    message: "Email sended your mail. Please check your Inbox",
+  });
+};
+
+// == == == == == == == == == == == == == == == == == == == ==
+//  ACCEPTING VERIFICATE CONTROLLER
+// == == == == == == == == == == == == == == == == == == == ==
+
+const acceptingVerificationController = (req, res, next) => {
+  res.status(200).json({
+    success: true,
+    message: "Your account verification is successfuly",
   });
 };
 
@@ -470,4 +496,6 @@ module.exports = {
   getWorks,
   getMessages,
   socialIDController,
+  verificationSendController,
+  acceptingVerificationController,
 };

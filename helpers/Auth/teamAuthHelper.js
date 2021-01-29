@@ -6,6 +6,9 @@ const {
   forgotPassword,
   resetPasswordWithAuthHelper,
   uploadedPFSaver,
+  acceptVerificationToken,
+  socialSignInUp,
+  verificationNewRequest,
 } = require("./authHelper");
 const Team = require("../../models/Team");
 
@@ -14,10 +17,9 @@ const Team = require("../../models/Team");
 // == == == == == == == == == == == == == == == == == == == ==
 
 const teamRegister = function () {
-  return errorHandlerWrapper(async (req, res, next) => {
-    res.data = await authRegister(Team, req, res,next);
-    next();
-  });
+  return (req, res, next) => {
+    authRegister(Team, req, res, next);
+  };
 };
 
 // == == == == == == == == == == == == == == == == == == == ==
@@ -90,6 +92,26 @@ const socialSignInUpController = () => {
   };
 };
 
+// == == == == == == == == == == == == == == == == == == == ==
+//  VERIFICATION TOKEN HANDLER
+// == == == == == == == == == == == == == == == == == == == ==
+
+const verificationTokenHandler = () => {
+  return (req, res, next) => {
+    verificationNewRequest(Team, req, next);
+  };
+};
+
+// == == == == == == == == == == == == == == == == == == == ==
+//  VERIFICATION ACCEPT HANDLER
+// == == == == == == == == == == == == == == == == == == == ==
+
+const verificationTokenAcceptHandler = () => {
+  return (req, res, next) => {
+    acceptVerificationToken(Team, req, next);
+  };
+};
+
 module.exports = {
   teamRegister,
   teamSignIn,
@@ -99,4 +121,6 @@ module.exports = {
   uploadProfileImage,
   uploadBGImage,
   socialSignInUpController,
+  verificationTokenHandler,
+  verificationTokenAcceptHandler,
 };

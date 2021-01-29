@@ -10,7 +10,7 @@ const sendMail = async (mailOptions) => {
       user: SMTP_USER,
       pass: SMTP_PASS,
     },
-  }); 
+  });
 
   await transporter.sendMail(mailOptions);
 };
