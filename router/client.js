@@ -172,7 +172,7 @@ router.get(
 // == == == == == == == == == == == == == == == == == == == ==
 
 router.get(
-  "/verificate",
+  "/signup/verificate",
   [
     tokenControl,
     blockedControl(Client),
@@ -193,7 +193,7 @@ router.get(
 // == == == == == == == == == == == == == == == == == == == ==
 
 router.get(
-  "/verificate_user",
+  "/signup/verificate_user",
   verificationTokenAcceptHandler(),
   acceptingVerificationController
 );
