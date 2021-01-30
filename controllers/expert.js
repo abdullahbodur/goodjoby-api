@@ -301,6 +301,7 @@ const verificationSendController = (req, res, next) => {
   res.status(200).json({
     success: true,
     message: "Email sended your mail. Please check your Inbox",
+    email: req.user.email,
   });
 };
 

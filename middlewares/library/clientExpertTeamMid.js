@@ -9,7 +9,7 @@ const {
 const sendMail = require("../../helpers/libraries/sendMail");
 const { dataControl } = require("../../helpers/database/databaseControl");
 
-const JobInfo = require('../../models/JobInfo');
+const JobInfo = require("../../models/JobInfo");
 // == == == == == == == == == == == == == == == == == == == ==
 //  CREATE  OFFER - TEAM - EXPERT
 // == == == == == == == == == == == == == == == == == == == ==
@@ -170,7 +170,7 @@ const cancelWrk = (isClient, modelName) =>
         subject: isClient
           ? "Your Work Will Cancel!"
           : "Your Work Request Will Cancel!",
-        html: CetTemplates.cancelWork(
+        html: cancelWork(
           isClient,
           work.client.name,
           resetPasswordUrl,
@@ -213,7 +213,9 @@ const cancelWrkAccept = errorHandlerWrapper(async (req, res, next) => {
   });
 
   if (!work)
-    return next(new CustomError("There is no work with your given information", 400));
+    return next(
+      new CustomError("There is no work with your given information", 400)
+    );
 
   work.state = parseInt(process.env.STATE_PASSIVE);
   work.cancel_token = undefined;
@@ -279,10 +281,7 @@ const upgradeFinishedPrcnt = () =>
           from: process.env.SMTP_USER,
           to: work.client.email,
           subject: "Your Work Has Been Finished!",
-          html: CetTemplates.upgradeWorkPercent(
-            work.expert.name,
-            finishedWorkAcceptUrl
-          ),
+          html: upgradeWorkPercent(work.expert.name, finishedWorkAcceptUrl),
         });
       } catch (error) {
         work.finished_token = undefined;
@@ -328,7 +327,7 @@ const addNewPosition = (isTeam) =>
       await expert.save();
 
       job[isTeam ? "teams" : "experts"].push(req.user.client_id);
-      job[isTeam ? "team_count" : "worker_count"]++
+      job[isTeam ? "team_count" : "worker_count"]++;
       await job.save();
     } catch (error) {
       expert.job = defJob;
@@ -344,5 +343,5 @@ module.exports = {
   cancelWrk,
   cancelWrkAccept,
   upgradeFinishedPrcnt,
-  addNewPosition
+  addNewPosition,
 };
