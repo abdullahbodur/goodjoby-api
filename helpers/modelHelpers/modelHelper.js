@@ -35,13 +35,6 @@ const generateJWTFromUser = (thisObject) => {
     ADMIN_COOKIE_EXPIRE,
   } = process.env;
 
-  // const payload = {
-  //   id: thisObject._id,
-  //   name: thisObject.name,
-  //   role: thisObject.role,
-  //   stage: thisObject.stage ? thisObject.stage : undefined,
-  // };
-
   const payload = {
     client_id: thisObject._id,
     goodjoby_ob: [

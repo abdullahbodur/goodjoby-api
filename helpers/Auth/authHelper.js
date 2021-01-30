@@ -290,7 +290,7 @@ const socialSignInUp = errorHandlerWrapper(async (req, res, next, model) => {
 // == == == == == == == == == == == == == == == == == == == ==
 
 const verificationNewRequest = errorHandlerWrapper(async (model, req, next) => {
-  const { DOMAIN_URI, PORT } = process.env;
+  const { WEB_APP_PORT, WEB_APP_URI } = process.env;
   const user = req.user;
 
   if (!user.client_id)
@@ -310,7 +310,7 @@ const verificationNewRequest = errorHandlerWrapper(async (model, req, next) => {
   const name =
     model === Client ? "client" : model === Expert ? "expert" : "team";
 
-  const verificationUrl = `http://${DOMAIN_URI}${PORT}/api/${name}/verificate_user?verificationToken=${token}`;
+  const verificationUrl = `http://${WEB_APP_URI}${WEB_APP_PORT}/api/${name}/signup/verified?verificationToken=${token}`;
 
   try {
     await sendMail({

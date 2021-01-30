@@ -98,6 +98,14 @@ const blockedControl = (model) =>
 
     const objectModel = await model.findById(req.user.client_id);
 
+    if (!objectModel)
+      return next(
+        new CustomError(
+          "Authorization is unsuccessful, Please control your validations",
+          400
+        )
+      );
+
     if (objectModel.blocked)
       return next(
         new CustomError("This user has been banned for any reason", 403)

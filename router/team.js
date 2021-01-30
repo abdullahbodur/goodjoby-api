@@ -200,7 +200,7 @@ router.get("/get-all-works", [
 // == == == == == == == == == == == == == == == == == == == ==
 
 router.get(
-  "/verificate",
+  "/signup/verificate",
   [
     tokenControl,
     blockedControl(Team),
@@ -221,7 +221,7 @@ router.get(
 // == == == == == == == == == == == == == == == == == == == ==
 
 router.get(
-  "/verificate_user",
+  "/signup/verificate_user",
   verificationTokenAcceptHandler(),
   acceptingVerificationController
 );
