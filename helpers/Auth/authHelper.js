@@ -16,6 +16,10 @@ const {
 const { generateUniqueUsername } = require("../modelHelpers/modelHelper");
 const Client = require("../../models/Client");
 const Expert = require("../../models/Expert");
+const {
+  verficiationMail,
+  resetPassword,
+} = require("../../templates/authTemplates");
 
 // == == == == == == == == == == == == == == == == == == == ==
 //  REGISTER CLIENT - TEAM - EXPERT
@@ -158,7 +162,7 @@ const forgotPassword = errorHandlerWrapper(
         from: process.env.SMTP_USER,
         to: objectModel.email,
         subject: "Reset Password",
-        html: AuthTemplates.resetPassword(resetPasswordUrl),
+        html: resetPassword(resetPasswordUrl),
       });
     } catch (error) {
       objectModel.token = undefined;
@@ -313,7 +317,7 @@ const verificationNewRequest = errorHandlerWrapper(async (model, req, next) => {
       from: process.env.SMTP_USER,
       to: userObject.email,
       subject: "Goodjoby Verification Mail",
-      html: AuthTemplates.verficiationMail(verificationUrl, userObject.name),
+      html: verficiationMail(verificationUrl, userObject.name),
     });
   } catch (error) {
     userObject.token = undefined;
@@ -323,6 +327,8 @@ const verificationNewRequest = errorHandlerWrapper(async (model, req, next) => {
 
     return next(new CustomError("Email could not send to client", 500));
   }
+
+  req.user.email = userObject.email;
 
   return next();
 });

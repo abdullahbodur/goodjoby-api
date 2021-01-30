@@ -358,7 +358,7 @@ const cancelJobAnnouncement = async (req, res, next) => {
         from: process.env.SMTP_USER,
         to: applicationMailList,
         subject: "Your Applied Job Announcement Canceled By Team",
-        html: CetTemplates.cancelJobAnnouncement(announcement_id),
+        html: cancelJobAnnouncement(announcement_id),
       });
     }
   } catch (error) {
@@ -390,6 +390,7 @@ const verificationSendController = (req, res, next) => {
   res.status(200).json({
     success: true,
     message: "Email sended your mail. Please check your Inbox",
+    email: req.user.email,
   });
 };
 

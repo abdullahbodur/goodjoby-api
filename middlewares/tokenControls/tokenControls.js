@@ -5,7 +5,6 @@ const {
   getTokenFromCookie,
 } = require("../../helpers/authorization/tokenHelpers");
 const CustomError = require("../../helpers/error/CustomError");
-const Admin = require("../../models/Admin");
 const Expert = require("../../models/Expert");
 const Client = require("../../models/Client");
 const Team = require("../../models/Team");

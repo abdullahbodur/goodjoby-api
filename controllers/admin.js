@@ -123,14 +123,14 @@ const cancelWork = errorHandlerWrapper(async (req, res, next) => {
       from: process.env.SMTP_USER,
       to: work.expert.email,
       subject: "Work Canceled By Us",
-      html: AdminMailTemplates.workExpert(work.expert.name, work_id),
+      html: workExpert(work.expert.name, work_id),
     });
 
     await sendMail({
       from: process.env.SMTP_USER,
       to: work.client.email,
       subject: "Work Canceled By Us",
-      html: AdminMailTemplates.workOwner(work.client.name, work_id),
+      html: workOwner(work.client.name, work_id),
     });
   } catch (error) {
     work.state = defState;
@@ -176,10 +176,7 @@ const cancelRequest = errorHandlerWrapper(async (req, res, next) => {
       from: process.env.SMTP_USER,
       to: expertRequest.expert.email,
       subject: "Your Offer Canceled By Us",
-      html: AdminMailTemplates.expertOffer(
-        expertRequest.expert.name,
-        request_id
-      ),
+      html: expertOffer(expertRequest.expert.name, request_id),
     });
   } catch (error) {
     expertRequest.state = defState;
@@ -246,7 +243,7 @@ const cancelPendingWork = errorHandlerWrapper(async (req, res, next) => {
         from: process.env.SMTP_USER,
         to: requestMailList,
         subject: "Your Requested Pending Work Canceled By Us",
-        html: AdminMailTemplates.pendingWorkRequester(pending_work_id),
+        html: pendingWorkRequester(pending_work_id),
       });
     }
 
@@ -254,10 +251,7 @@ const cancelPendingWork = errorHandlerWrapper(async (req, res, next) => {
       from: process.env.SMTP_USER,
       to: pendingWork.client.email,
       subject: "Your Pending Work Canceled By Us",
-      html: AdminMailTemplates.pendingWorkOwner(
-        pendingWork.client.name,
-        pending_work_id
-      ),
+      html: pendingWorkOwner(pendingWork.client.name, pending_work_id),
     });
   } catch (error) {
     pendingWork.state = defState;
@@ -312,7 +306,7 @@ const cancelJobApplication = errorHandlerWrapper(async (req, res, next) => {
       from: process.env.SMTP_USER,
       to: jobApplication.expert.email,
       subject: "Job Application Canceled By Us",
-      html: AdminMailTemplates.jobApplicationApplier(
+      html: jobApplicationApplier(
         jobApplication.expert.name,
         application_id
       ),
@@ -398,7 +392,7 @@ const cancelJobAnnouncement = errorHandlerWrapper(async (req, res, next) => {
         from: process.env.SMTP_USER,
         to: applicationMailList,
         subject: "Your Applied Job Announcement Canceled By Us",
-        html: AdminMailTemplates.jobAnnouncementApplier(job_announcement_id),
+        html: jobAnnouncementApplier(job_announcement_id),
       });
     }
 
@@ -406,7 +400,7 @@ const cancelJobAnnouncement = errorHandlerWrapper(async (req, res, next) => {
       from: process.env.SMTP_USER,
       to: jobAnnouncement.team.email,
       subject: "Your Job Announcement Work Canceled By Us",
-      html: AdminMailTemplates.jobAnnouncementTeam(
+      html: jobAnnouncementTeam(
         jobAnnouncement.team.name,
         job_announcement_id
       ),
