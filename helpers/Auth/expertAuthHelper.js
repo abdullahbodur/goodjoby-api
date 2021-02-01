@@ -1,4 +1,3 @@
-const errorHandlerWrapper = require("express-async-handler");
 const {
   authRegister,
   authSignIn,
@@ -9,6 +8,7 @@ const {
   socialSignInUp,
   acceptVerificationToken,
   verificationNewRequest,
+  updateLocation,
 } = require("./authHelper");
 
 const Expert = require("../../models/Expert");
@@ -113,6 +113,16 @@ const verificationTokenAcceptHandler = () => {
   };
 };
 
+// == == == == == == == == == == == == == == == == == == == ==
+//  UPDATE LOCATION HANDLER
+// == == == == == == == == == == == == == == == == == == == ==
+
+const updateLocationHandler = () => {
+  return (req, res, next) => {
+    updateLocation(Expert, req, next);
+  };
+};
+
 module.exports = {
   expertRegister,
   expertSignIn,
@@ -124,4 +134,5 @@ module.exports = {
   socialSignInUpController,
   verificationTokenHandler,
   verificationTokenAcceptHandler,
+  updateLocationHandler,
 };

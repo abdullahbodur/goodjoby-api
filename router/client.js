@@ -24,6 +24,7 @@ const {
   socialIDController,
   verificationSendController,
   acceptingVerificationController,
+  updateLocationController,
 } = require("../controllers/client");
 
 const {
@@ -37,6 +38,7 @@ const {
   socialSignInUpController,
   verificationTokenHandler,
   verificationTokenAcceptHandler,
+  updateLocationHandler,
 } = require("../helpers/Auth/clientAuthHelper");
 
 const {
@@ -193,7 +195,7 @@ router.get(
 // == == == == == == == == == == == == == == == == == == == ==
 
 router.get(
-  "/signup/verificate_user",
+  "/signup/verified",
   verificationTokenAcceptHandler(),
   acceptingVerificationController
 );
@@ -330,6 +332,31 @@ router.post(
 // == == == == == == == == == == == == == == == == == == == ==
 
 router.post("/social_sign_in", socialSignInUpController());
+
+// ==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S
+//  ******** PUT REQUESTS ******** PUT REQUESTS ********
+// ==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S
+
+// == == == == == == == == == == == == == == == == == == == ==
+//  UPDATE LOCATION
+// == == == == == == == == == == == == == == == == == == == ==
+//  => ADDITION HEADERS:
+//   * Connection = accessToken
+// == == == == == == == == == == == == == == == == == == == ==
+//  => PARAM ATTRIBUTES:
+//    * state_id
+// == == == == == == == == == == == == == == == == == == == ==
+
+router.put(
+  "/update_location",
+  [
+    tokenControl,
+    tokenRoleControl("goodjoby.api.cli"),
+    blockedControl(Client),
+    updateLocationHandler(),
+  ],
+  updateLocationController
+);
 
 // ==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S
 //  ******** PARAMS REQUESTS ******** PARAMS REQUESTS ********

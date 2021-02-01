@@ -25,6 +25,7 @@ const {
   cancelExpertRequest,
   verificationSendController,
   acceptingVerificationController,
+  updateLocationController,
 } = require("../controllers/team");
 
 const {
@@ -38,6 +39,7 @@ const {
   socialSignInUpController,
   verificationTokenHandler,
   verificationTokenAcceptHandler,
+  updateLocationHandler,
 } = require("../helpers/Auth/teamAuthHelper");
 
 const {
@@ -221,7 +223,7 @@ router.get(
 // == == == == == == == == == == == == == == == == == == == ==
 
 router.get(
-  "/signup/verificate_user",
+  "/signup/verified",
   verificationTokenAcceptHandler(),
   acceptingVerificationController
 );
@@ -427,6 +429,27 @@ router.put(
   "/cancel_job_announcement",
   [tokenControl, tokenRoleControl("goodjoby.api.tm"), blockedControl(Team)],
   cancelJobAnnouncement
+);
+
+// == == == == == == == == == == == == == == == == == == == ==
+//  UPDATE LOCATION
+// == == == == == == == == == == == == == == == == == == == ==
+//  => ADDITION HEADERS:
+//   * Connection = accessToken
+// == == == == == == == == == == == == == == == == == == == ==
+//  => PARAM ATTRIBUTES:
+//    * state_id
+// == == == == == == == == == == == == == == == == == == == ==
+
+router.put(
+  "/update_location",
+  [
+    tokenControl,
+    tokenRoleControl("goodjoby.api.tm"),
+    blockedControl(Team),
+    updateLocationHandler(),
+  ],
+  updateLocationController
 );
 
 // ==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S

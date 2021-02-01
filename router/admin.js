@@ -22,7 +22,7 @@ const {
   cancelRequest,
   cancelPendingWork,
   cancelJobApplication,
-  cancelJobAnnouncement
+  cancelJobAnnouncement,
 } = require("../controllers/admin");
 const Admin = require("../models/Admin");
 
@@ -47,62 +47,63 @@ router.post(
 
 router.post("/login", adminSignInHelper, loginAdmin);
 
-
-
-
 // ==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S
 //  ******** PUT REQUESTS ******** PUT REQUESTS ********
 // ==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S
-
 
 // == == == == == == == == == == == == == == == == == == == ==
 //  CANCEL WORK
 // == == == == == == == == == == == == == == == == == == == ==
 
-
-router.put("/cancel_work",[adminTokenControl, adminStageControl([2, 4]), blockedControl(Admin)],cancelWork)
-
+router.put(
+  "/cancel_work",
+  [adminTokenControl, adminStageControl([2, 4]), blockedControl(Admin)],
+  cancelWork
+);
 
 // == == == == == == == == == == == == == == == == == == == ==
 //  CANCEL REQUEST
 // == == == == == == == == == == == == == == == == == == == ==
 
-
-router.put("/cancel_request",[adminTokenControl, adminStageControl([2, 4]), blockedControl(Admin)],cancelRequest)
-
+router.put(
+  "/cancel_request",
+  [adminTokenControl, adminStageControl([2, 4]), blockedControl(Admin)],
+  cancelRequest
+);
 
 // == == == == == == == == == == == == == == == == == == == ==
 //  CANCEL PENDING WORK
 // == == == == == == == == == == == == == == == == == == == ==
 
-router.put("/cancel_pending_work",[adminTokenControl, adminStageControl([2, 4]), blockedControl(Admin)],cancelPendingWork)
-
-
+router.put(
+  "/cancel_pending_work",
+  [adminTokenControl, adminStageControl([2, 4]), blockedControl(Admin)],
+  cancelPendingWork
+);
 
 // == == == == == == == == == == == == == == == == == == == ==
 //  CANCEL JOB APPLICATION
 // == == == == == == == == == == == == == == == == == == == ==
 
-router.put("/cancel_job_application",[adminTokenControl, adminStageControl([2, 4]), blockedControl(Admin)],cancelJobApplication)
-
-
+router.put(
+  "/cancel_job_application",
+  [adminTokenControl, adminStageControl([2, 4]), blockedControl(Admin)],
+  cancelJobApplication
+);
 
 // == == == == == == == == == == == == == == == == == == == ==
 //  CANCEL JOB ANNOUNCEMENT
 // == == == == == == == == == == == == == == == == == == == ==
 
-router.put("/cancel_job_announcement",[adminTokenControl, adminStageControl([2, 4]), blockedControl(Admin)],cancelJobAnnouncement)
-
-
-
-
+router.put(
+  "/cancel_job_announcement",
+  [adminTokenControl, adminStageControl([2, 4]), blockedControl(Admin)],
+  cancelJobAnnouncement
+);
 
 // ==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S
 //  ******** PARAM REQUESTS ******** PARAM REQUESTS ********
 // ==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S
-
-
-
 
 // == == == == == == == == == == == == == == == == == == == ==
 //  CANCEL WORK - ADMIN
