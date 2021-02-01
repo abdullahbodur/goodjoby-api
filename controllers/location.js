@@ -128,7 +128,10 @@ const uploadLocationDatabase = errorHandlerWrapper(async (req, res, next) => {
 // == == == == == == == == == == == == == == == == == == == ==
 
 const getCountries = errorHandlerWrapper(async (req, res, next) => {
-  const countries = await Country.find();
+  const { ignore } = req.query;
+
+  const select = ignoreSelectGenerator(ignore);
+  const countries = await Country.find().select(select);
 
   res.status(200).json({
     success: true,
