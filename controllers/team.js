@@ -405,6 +405,17 @@ const acceptingVerificationController = (req, res, next) => {
   });
 };
 
+// == == == == == == == == == == == == == == == == == == == ==
+//  UPDATE LOCATION CONTROLLER
+// == == == == == == == == == == == == == == == == == == == ==
+
+const updateLocationController = (req, res, next) => {
+  res.status(200).json({
+    success: true,
+    message: "Your location is updated successfuly",
+  });
+};
+
 module.exports = {
   registerTeam,
   signTeam,
@@ -430,4 +441,5 @@ module.exports = {
   cancelExpertRequest,
   verificationSendController,
   acceptingVerificationController,
+  updateLocationController,
 };

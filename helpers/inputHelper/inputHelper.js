@@ -24,8 +24,26 @@ const stringEliminate = (string) => {
   return string.replace(/[^a-z\d]+/gi, "").toLowerCase();
 };
 
+// == == == == == == == == == == == == == == == == == == == ==
+// IGNORE SELECT CREATIOR
+// == == == == == == == == == == == == == == == == == == == ==
+
+const ignoreSelectGenerator = (ignore) => {
+  let select = "";
+
+  if (ignore) {
+    const ignored = ignore.split(",");
+
+    for (const ignoreI of ignored) {
+      select += " -" + ignoreI;
+    }
+  }
+  return select;
+};
+
 module.exports = {
   inputControl,
   comparePasswordInModel,
   stringEliminate,
+  ignoreSelectGenerator,
 };

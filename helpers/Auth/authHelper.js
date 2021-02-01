@@ -20,13 +20,15 @@ const {
   verficiationMail,
   resetPassword,
 } = require("../../templates/authTemplates");
+const Team = require("../../models/Team");
+const State = require("../../models/LocationModels/State");
 
 // == == == == == == == == == == == == == == == == == == == ==
 //  REGISTER CLIENT - TEAM - EXPERT
 // == == == == == == == == == == == == == == == == == == == ==
 
 const authRegister = errorHandlerWrapper(async (model, req, res, next) => {
-  let { name, email, password, username } = req.body;
+  let { name, email, password, username, stage } = req.body;
 
   try {
     if (!name || !email || !password)
@@ -45,6 +47,7 @@ const authRegister = errorHandlerWrapper(async (model, req, res, next) => {
       email,
       password,
       username,
+      stage,
     });
 
     sendJwtToUser(objectModel, res);
@@ -308,9 +311,9 @@ const verificationNewRequest = errorHandlerWrapper(async (model, req, next) => {
   // // Change HTTP WHEN YOU ARE DEPLOYING !!!
 
   const name =
-    model === Client ? "client" : model === Expert ? "expert" : "team";
+    model === Client ? "clients" : model === Expert ? "experts" : "teams";
 
-  const verificationUrl = `http://${WEB_APP_URI}${WEB_APP_PORT}/api/${name}/signup/verified?verificationToken=${token}`;
+  const verificationUrl = `http://${WEB_APP_URI}:${WEB_APP_PORT}/${name}/signup/verified?verificationToken=${token}`;
 
   try {
     await sendMail({
@@ -370,6 +373,57 @@ const acceptVerificationToken = errorHandlerWrapper(
     return next();
   }
 );
+
+// == == == == == == == == == == == == == == == == == == == ==
+//   UPDATE LOCATION
+// == == == == == == == == == == == == == == == == == == == ==
+
+const updateLocation = errorHandlerWrapper(async (model, req, next) => {
+  const { state_id } = req.body;
+  const { client_id, userObject } = req.user;
+
+  // control
+  if (!state_id || !client_id)
+    return next(new CustomError("Invalid values for changes location", 400));
+
+  // control
+  if (userObject.state_id === state_id)
+    return next(
+      new CustomError("You are already registered in this state", 400)
+    );
+
+  // change different attribute by different model
+  const new_model = {};
+  const model_type =
+    model === Client ? "clients" : model === Expert ? "experts" : "teams";
+
+  new_model[model_type] = state_id;
+
+  const default_state_id = userObject.state_id;
+
+  try {
+    userObject.state_id = state_id;
+
+    await userObject.save();
+
+    await State.findByIdAndUpdate(
+      state_id,
+      {
+        $push: new_model,
+      },
+      { runValidators: true, new: true }
+    );
+  } catch (error) {
+    userObject.state_id = default_state_id;
+
+    var index = state[model_type].index(client_id);
+
+    if (index !== -1) state[model_type].splice(index, 1);
+  }
+
+  return next();
+});
+
 module.exports = {
   authRegister,
   authSignIn,
@@ -380,4 +434,5 @@ module.exports = {
   socialSignInUp,
   verificationNewRequest,
   acceptVerificationToken,
+  updateLocation,
 };
