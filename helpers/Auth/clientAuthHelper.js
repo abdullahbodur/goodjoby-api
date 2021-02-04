@@ -9,6 +9,7 @@ const {
   verificationNewRequest,
   acceptVerificationToken,
   updateLocation,
+  registerProfile,
 } = require("./authHelper");
 
 const Client = require("../../models/Client");
@@ -123,6 +124,16 @@ const updateLocationHandler = () => {
   };
 };
 
+// == == == == == == == == == == == == == == == == == == == ==
+//  REGISTER CLIENT PROFILE
+// == == == == == == == == == == == == == == == == == == == ==
+
+const registerClientProfile = () => {
+  return (req, res, next) => {
+    registerProfile(Client, req, next);
+  };
+};
+
 module.exports = {
   clientRegister,
   clientSignIn,
@@ -135,4 +146,5 @@ module.exports = {
   verificationTokenHandler,
   verificationTokenAcceptHandler,
   updateLocationHandler,
+  registerClientProfile,
 };

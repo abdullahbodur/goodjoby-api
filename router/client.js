@@ -25,6 +25,7 @@ const {
   verificationSendController,
   acceptingVerificationController,
   updateLocationController,
+  registerProfile,
 } = require("../controllers/client");
 
 const {
@@ -39,6 +40,7 @@ const {
   verificationTokenHandler,
   verificationTokenAcceptHandler,
   updateLocationHandler,
+  registerClientProfile,
 } = require("../helpers/Auth/clientAuthHelper");
 
 const {
@@ -356,6 +358,31 @@ router.put(
     updateLocationHandler(),
   ],
   updateLocationController
+);
+
+// == == == == == == == == == == == == == == == == == == == ==
+//  REGISTER PROFILE
+// == == == == == == == == == == == == == == == == == == == ==
+//  => ADDITION HEADERS:
+//   * Connection = accessToken
+// == == == == == == == == == == == == == == == == == == == ==
+//  => PARAM ATTRIBUTES:
+//    * username
+//    * location
+//    * phone_number
+//    * gender
+//    * bio
+// == == == == == == == == == == == == == == == == == == == ==
+
+router.put(
+  "/register_profile",
+  [
+    tokenControl,
+    tokenRoleControl("goodjoby.api.cli"),
+    blockedControl(Client),
+    registerClientProfile(),
+  ],
+  registerProfile
 );
 
 // ==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S

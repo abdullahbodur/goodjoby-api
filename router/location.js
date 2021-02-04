@@ -85,7 +85,7 @@ router.post(
 //    * name
 // == == == == == == == == == == == == == == == == == == == ==
 
-router.get(
+router.put(
   "/upload_location",
   [adminTokenControl, adminStageControl([4]), blockedControl(Admin)],
   uploadLocationDatabase

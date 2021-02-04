@@ -25,6 +25,7 @@ const {
   verificationSendController,
   acceptingVerificationController,
   updateLocationController,
+  registerProfile,
 } = require("../controllers/expert");
 
 const {
@@ -65,6 +66,7 @@ const uploadFile = require("../helpers/libraries/uploadFile");
 const dataControl = require("../middlewares/tokenControls/dataControl");
 const Expert = require("../models/Expert");
 const JobInfo = require("../models/JobInfo");
+const { registerClientProfile } = require("../helpers/Auth/clientAuthHelper");
 
 const uploadProfileImg = uploadFile("experts/profiles", "profile_image_", [
   "image/png",
@@ -425,6 +427,31 @@ router.put(
     updateLocationHandler(),
   ],
   updateLocationController
+);
+
+// == == == == == == == == == == == == == == == == == == == ==
+//  REGISTER PROFILE
+// == == == == == == == == == == == == == == == == == == == ==
+//  => ADDITION HEADERS:
+//   * Connection = accessToken
+// == == == == == == == == == == == == == == == == == == == ==
+//  => PARAM ATTRIBUTES:
+//    * username
+//    * location
+//    * phone_number
+//    * gender
+//    * bio
+// == == == == == == == == == == == == == == == == == == == ==
+
+router.put(
+  "/register_profile",
+  [
+    tokenControl,
+    tokenRoleControl("goodjoby.api.exp"),
+    blockedControl(Expert),
+    registerClientProfile(),
+  ],
+  registerProfile
 );
 
 // ==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S

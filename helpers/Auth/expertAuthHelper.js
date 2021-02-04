@@ -9,6 +9,7 @@ const {
   acceptVerificationToken,
   verificationNewRequest,
   updateLocation,
+  registerProfile,
 } = require("./authHelper");
 
 const Expert = require("../../models/Expert");
@@ -123,6 +124,16 @@ const updateLocationHandler = () => {
   };
 };
 
+// == == == == == == == == == == == == == == == == == == == ==
+//  REGISTER EXPERT PROFILE
+// == == == == == == == == == == == == == == == == == == == ==
+
+const registerExpertProfile = () => {
+  return (req, res, next) => {
+    registerProfile(Expert, req, next);
+  };
+};
+
 module.exports = {
   expertRegister,
   expertSignIn,
@@ -135,4 +146,5 @@ module.exports = {
   verificationTokenHandler,
   verificationTokenAcceptHandler,
   updateLocationHandler,
+  registerExpertProfile,
 };

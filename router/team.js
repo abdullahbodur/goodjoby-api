@@ -40,6 +40,7 @@ const {
   verificationTokenHandler,
   verificationTokenAcceptHandler,
   updateLocationHandler,
+  registerTeamProfile,
 } = require("../helpers/Auth/teamAuthHelper");
 
 const {
@@ -68,6 +69,7 @@ const queryMiddleware = require("../middlewares/query/queryMiddleware");
 const uploadFile = require("../helpers/libraries/uploadFile");
 const Team = require("../models/Team");
 const JobInfo = require("../models/JobInfo");
+const { registerClientProfile } = require("../helpers/Auth/clientAuthHelper");
 
 const uploadProfileImg = uploadFile("teams/profiles", "profile_image_", [
   "image/png",
@@ -450,6 +452,31 @@ router.put(
     updateLocationHandler(),
   ],
   updateLocationController
+);
+
+// == == == == == == == == == == == == == == == == == == == ==
+//  REGISTER PROFILE
+// == == == == == == == == == == == == == == == == == == == ==
+//  => ADDITION HEADERS:
+//   * Connection = accessToken
+// == == == == == == == == == == == == == == == == == == == ==
+//  => PARAM ATTRIBUTES:
+//    * username
+//    * location
+//    * phone_number
+//    * gender
+//    * bio
+// == == == == == == == == == == == == == == == == == == == ==
+
+router.put(
+  "/register_profile",
+  [
+    tokenControl,
+    tokenRoleControl("goodjoby.api.tm"),
+    blockedControl(Team),
+    registerClientProfile(),
+  ],
+  registerTeamProfile
 );
 
 // ==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S
