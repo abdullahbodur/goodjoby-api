@@ -33,7 +33,7 @@ Error Message : ${customError.message}`);
 
   // send error message at jsonFormat
   res.status(customError.statusCode || 200).json({
-    succes: false,
+    success: false,
     message: customError.message,
   });
 };

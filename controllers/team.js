@@ -416,16 +416,16 @@ const updateLocationController = (req, res, next) => {
   });
 };
 
-// == == == == == == == == == == == == == == == == == == == ==
-//  REGISTER PROFILE
-// == == == == == == == == == == == == == == == == == == == ==
+// // == == == == == == == == == == == == == == == == == == == ==
+// //  REGISTER PROFILE
+// // == == == == == == == == == == == == == == == == == == == ==
 
-const registerProfile = (req, res, next) => {
-  res.status(200).json({
-    success: true,
-    message: "Register profile is saved",
-  });
-};
+// const registerProfile = (req, res, next) => {
+//   res.status(200).json({
+//     success: true,
+//     message: "Register profile is saved",
+//   });
+// };
 
 module.exports = {
   registerTeam,
@@ -453,5 +453,4 @@ module.exports = {
   verificationSendController,
   acceptingVerificationController,
   updateLocationController,
-  registerProfile,
 };

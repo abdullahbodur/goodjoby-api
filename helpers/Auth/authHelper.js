@@ -429,7 +429,7 @@ const updateLocation = errorHandlerWrapper(async (model, req, next) => {
 //  REGISTER USER PROFILE
 // == == == == == == == == == == == == == == == == == == == ==
 
-const registerProfile = errorHandlerWrapper(async (model, req, next) => {
+const registerProfile = errorHandlerWrapper(async (model, req, res, next) => {
   const { username, bio, location, gender, phone_number } = req.body;
   const { USER_PROFILE_CREATED } = process.env;
   let { client_id } = req.user;
