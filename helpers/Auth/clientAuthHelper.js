@@ -130,7 +130,7 @@ const updateLocationHandler = () => {
 
 const registerClientProfile = () => {
   return (req, res, next) => {
-    registerProfile(Client, req, next);
+    registerProfile(Client, req, res, next);
   };
 };
 

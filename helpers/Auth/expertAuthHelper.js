@@ -130,7 +130,7 @@ const updateLocationHandler = () => {
 
 const registerExpertProfile = () => {
   return (req, res, next) => {
-    registerProfile(Expert, req, next);
+    registerProfile(Expert, req, res, next);
   };
 };
 

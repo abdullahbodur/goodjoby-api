@@ -25,7 +25,6 @@ const {
   verificationSendController,
   acceptingVerificationController,
   updateLocationController,
-  registerProfile,
 } = require("../controllers/client");
 
 const {
@@ -374,16 +373,12 @@ router.put(
 //    * bio
 // == == == == == == == == == == == == == == == == == == == ==
 
-router.put(
-  "/register_profile",
-  [
-    tokenControl,
-    tokenRoleControl("goodjoby.api.cli"),
-    blockedControl(Client),
-    registerClientProfile(),
-  ],
-  registerProfile
-);
+router.put("/register_profile", [
+  tokenControl,
+  tokenRoleControl("goodjoby.api.cli"),
+  blockedControl(Client),
+  registerClientProfile(),
+]);
 
 // ==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S
 //  ******** PARAMS REQUESTS ******** PARAMS REQUESTS ********

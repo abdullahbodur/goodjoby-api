@@ -468,16 +468,12 @@ router.put(
 //    * bio
 // == == == == == == == == == == == == == == == == == == == ==
 
-router.put(
-  "/register_profile",
-  [
-    tokenControl,
-    tokenRoleControl("goodjoby.api.tm"),
-    blockedControl(Team),
-    registerClientProfile(),
-  ],
-  registerTeamProfile
-);
+router.put("/register_profile", [
+  tokenControl,
+  tokenRoleControl("goodjoby.api.tm"),
+  blockedControl(Team),
+  registerClientProfile(),
+]);
 
 // ==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S
 //  ******** PARAMS REQUESTS ******** PARAMS REQUESTS ********

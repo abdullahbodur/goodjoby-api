@@ -446,7 +446,7 @@ const getMessages = (req, res, next) => {
 
 const socialIDController = (req, res, next) => {
   res.status(200).json({
-    sucess: true,
+    success: true,
     account_id: req.body.account_id,
     account_type: req.body.account_type,
     message: "This account is available for register",
@@ -487,16 +487,16 @@ const updateLocationController = (req, res, next) => {
   });
 };
 
-// == == == == == == == == == == == == == == == == == == == ==
-//  REGISTER PROFILE
-// == == == == == == == == == == == == == == == == == == == ==
+// // == == == == == == == == == == == == == == == == == == == ==
+// //  REGISTER PROFILE
+// // == == == == == == == == == == == == == == == == == == == ==
 
-const registerProfile = (req, res, next) => {
-  res.status(200).json({
-    success: true,
-    message: "Register profile is saved",
-  });
-};
+// const registerProfile = (req, res, next) => {
+//   res.status(200).json({
+//     success: true,
+//     message: "Register profile is saved",
+//   });
+// };
 
 
 module.exports = {
@@ -523,5 +523,4 @@ module.exports = {
   verificationSendController,
   acceptingVerificationController,
   updateLocationController,
-  registerProfile,
 };

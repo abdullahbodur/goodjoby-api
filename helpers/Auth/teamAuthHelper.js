@@ -129,7 +129,7 @@ const updateLocationHandler = () => {
 
 const registerTeamProfile = () => {
   return (req, res, next) => {
-    registerProfile(Team, req, next);
+    registerProfile(Team, req, res, next);
   };
 };
 

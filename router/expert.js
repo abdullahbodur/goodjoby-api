@@ -25,7 +25,6 @@ const {
   verificationSendController,
   acceptingVerificationController,
   updateLocationController,
-  registerProfile,
 } = require("../controllers/expert");
 
 const {
@@ -443,16 +442,12 @@ router.put(
 //    * bio
 // == == == == == == == == == == == == == == == == == == == ==
 
-router.put(
-  "/register_profile",
-  [
-    tokenControl,
-    tokenRoleControl("goodjoby.api.exp"),
-    blockedControl(Expert),
-    registerClientProfile(),
-  ],
-  registerProfile
-);
+router.put("/register_profile", [
+  tokenControl,
+  tokenRoleControl("goodjoby.api.exp"),
+  blockedControl(Expert),
+  registerClientProfile(),
+]);
 
 // ==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S
 //  ******** PARAMS REQUESTS ******** PARAMS REQUESTS ********
