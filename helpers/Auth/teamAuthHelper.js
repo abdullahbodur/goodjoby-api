@@ -9,6 +9,7 @@ const {
   socialSignInUp,
   verificationNewRequest,
   updateLocation,
+  registerProfile,
 } = require("./authHelper");
 const Team = require("../../models/Team");
 
@@ -122,6 +123,16 @@ const updateLocationHandler = () => {
   };
 };
 
+// == == == == == == == == == == == == == == == == == == == ==
+//  REGISTER TEAM PROFILE
+// == == == == == == == == == == == == == == == == == == == ==
+
+const registerTeamProfile = () => {
+  return (req, res, next) => {
+    registerProfile(Team, req, next);
+  };
+};
+
 module.exports = {
   teamRegister,
   teamSignIn,
@@ -134,4 +145,5 @@ module.exports = {
   verificationTokenHandler,
   verificationTokenAcceptHandler,
   updateLocationHandler,
+  registerTeamProfile,
 };

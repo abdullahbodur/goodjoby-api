@@ -105,7 +105,17 @@ const ClientSchema = new Schema({
   creation_code: {
     type: Number,
     default: 1,
-    enum: [1  , 2, 3, 4],
+    enum: [1, 2, 3, 4],
+  },
+  phone_number: {
+    type: Number,
+  },
+  gender: {
+    type: Number,
+    enum: [1, 2, 3],
+  },
+  location: {
+    type: String,
   },
 });
 

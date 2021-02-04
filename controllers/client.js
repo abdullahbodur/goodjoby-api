@@ -486,6 +486,19 @@ const updateLocationController = (req, res, next) => {
     message: "Your location is updated successfuly",
   });
 };
+
+// == == == == == == == == == == == == == == == == == == == ==
+//  REGISTER PROFILE
+// == == == == == == == == == == == == == == == == == == == ==
+
+const registerProfile = (req, res, next) => {
+  res.status(200).json({
+    success: true,
+    message: "Register profile is saved",
+  });
+};
+
+
 module.exports = {
   profileClient,
   logoutClient,
@@ -510,4 +523,5 @@ module.exports = {
   verificationSendController,
   acceptingVerificationController,
   updateLocationController,
+  registerProfile,
 };

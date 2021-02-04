@@ -218,6 +218,7 @@ const resetPasswordWithAuthHelper = errorHandlerWrapper(
 const uploadedPFSaver = errorHandlerWrapper(async (model, req, next, prop) => {
   let obj = {};
   obj[prop] = req.savedFileName;
+
   const objectModel = await model.findByIdAndUpdate(req.user.client_id, obj, {
     new: true,
     runValidators: true,
@@ -424,6 +425,33 @@ const updateLocation = errorHandlerWrapper(async (model, req, next) => {
   return next();
 });
 
+// == == == == == == == == == == == == == == == == == == == ==
+//  REGISTER USER PROFILE
+// == == == == == == == == == == == == == == == == == == == ==
+
+const registerProfile = errorHandlerWrapper(async (model, req, next) => {
+  const { username, bio, location, gender, phone_number } = req.body;
+  const { USER_PROFILE_CREATED } = process.env;
+  let { client_id } = req.user;
+
+  const userObject = await model.findByIdAndUpdate(
+    client_id,
+    {
+      username,
+      bio,
+      location,
+      gender,
+      phone_number,
+      creation_code: USER_PROFILE_CREATED,
+    },
+    { runValidators: true, new: true }
+  );
+
+  sendJwtToUser(userObject, res);
+
+  return next();
+});
+
 module.exports = {
   authRegister,
   authSignIn,
@@ -435,4 +463,5 @@ module.exports = {
   verificationNewRequest,
   acceptVerificationToken,
   updateLocation,
+  registerProfile,
 };

@@ -16,6 +16,7 @@ const createNewFileSystem = (
       callback(null, path.join(rootDir, `/public/uploads/${uploadPath}`));
     },
     filename: function (req, file, callback) {
+
       const extension = file.mimetype.split("/")[1];
       const id = crypting(isDocument ? req.params.id : req.user.client_id);
 
@@ -34,7 +35,6 @@ const createNewFileSystem = (
 
   const fileFilter = (req, file, callback) => {
     const allowedMimeTypes = allowedTypes;
-
     if (!allowedMimeTypes.includes(file.mimetype)) {
       return callback(
         new CustomError("Please provide a file with different extension", 400),

@@ -162,6 +162,16 @@ const TeamSchema = new Schema({
     default: 1,
     enum: [1, 2, 3, 4],
   },
+  phone_number: {
+    type: Number,
+  },
+  gender: {
+    type: Number,
+    enum: [1, 2, 3],
+  },
+  location: {
+    type: String,
+  },
 });
 
 TeamSchema.methods.getTokenFromUser = function () {

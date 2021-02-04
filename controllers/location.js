@@ -131,7 +131,7 @@ const getCountries = errorHandlerWrapper(async (req, res, next) => {
   const { ignore } = req.query;
 
   const select = ignoreSelectGenerator(ignore);
-  const countries = await Country.find().select(select);
+  const countries = await Country.find({}).select(select);
 
   res.status(200).json({
     success: true,
