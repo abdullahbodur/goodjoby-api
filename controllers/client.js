@@ -466,17 +466,6 @@ const verificationSendController = (req, res, next) => {
 };
 
 // == == == == == == == == == == == == == == == == == == == ==
-//  ACCEPTING VERIFICATE CONTROLLER
-// == == == == == == == == == == == == == == == == == == == ==
-
-const acceptingVerificationController = (req, res, next) => {
-  res.status(200).json({
-    success: true,
-    message: "Your account verification is successfuly",
-  });
-};
-
-// == == == == == == == == == == == == == == == == == == == ==
 //  UPDATE LOCATION CONTROLLER
 // == == == == == == == == == == == == == == == == == == == ==
 
@@ -486,18 +475,6 @@ const updateLocationController = (req, res, next) => {
     message: "Your location is updated successfuly",
   });
 };
-
-// // == == == == == == == == == == == == == == == == == == == ==
-// //  REGISTER PROFILE
-// // == == == == == == == == == == == == == == == == == == == ==
-
-// const registerProfile = (req, res, next) => {
-//   res.status(200).json({
-//     success: true,
-//     message: "Register profile is saved",
-//   });
-// };
-
 
 module.exports = {
   profileClient,
@@ -521,6 +498,5 @@ module.exports = {
   getMessages,
   socialIDController,
   verificationSendController,
-  acceptingVerificationController,
   updateLocationController,
 };

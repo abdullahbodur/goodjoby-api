@@ -104,8 +104,8 @@ const ClientSchema = new Schema({
   },
   creation_code: {
     type: Number,
-    default: 1,
-    enum: [1, 2, 3, 4],
+    default: 101,
+    enum: [101, 107, 113, 131],
   },
   phone_number: {
     type: Number,

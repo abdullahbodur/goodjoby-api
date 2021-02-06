@@ -24,7 +24,7 @@ const {
 //  CREATE A NEW COUNTRY
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => BODY ATTRIBUTES:
 //    * country_code
@@ -41,7 +41,7 @@ router.post(
 //  CREATE A NEW CİTY
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => BODY ATTRIBUTES:
 //    * plate_id
@@ -59,7 +59,7 @@ router.post(
 //  CREATE A NEW STATE
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => BODY ATTRIBUTES:
 //    * post_code
@@ -77,7 +77,7 @@ router.post(
 //  UPLOAD LOCATION DATABASE
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => BODY ATTRIBUTES:
 //    * post_code
@@ -85,9 +85,9 @@ router.post(
 //    * name
 // == == == == == == == == == == == == == == == == == == == ==
 
-router.put(
+router.post(
   "/upload_location",
-  [adminTokenControl, adminStageControl([4]), blockedControl(Admin)],
+  // [adminTokenControl, adminStageControl([4]), blockedControl(Admin)],
   uploadLocationDatabase
 );
 

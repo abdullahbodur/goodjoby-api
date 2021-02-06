@@ -18,7 +18,7 @@ const FACEBOOK_TOKEN_DECODE =
 // == == == == == == == == == == == == == == == == == == == ==
 
 const tokenControl = errorHandlerWrapper((req, res, next) => {
-  const { jwt_secret_key_here } = process.env;
+  const { JWT_SECRET_KEY } = process.env;
 
   if (!isTokenIncluded(req)) {
     return next(
@@ -28,7 +28,7 @@ const tokenControl = errorHandlerWrapper((req, res, next) => {
 
   const token = getTokenFromCookie(req);
 
-  jwt.verify(token, jwt_secret_key_here, (err, decoded) => {
+  jwt.verify(token, JWT_SECRET_KEY, (err, decoded) => {
     if (err) next(new CustomError("Your Authorize is invalid", 401));
     req.user = {
       client_id: decoded.client_id,
@@ -49,14 +49,14 @@ const tokenControl = errorHandlerWrapper((req, res, next) => {
 // == == == == == == == == == == == == == == == == == == == ==
 
 const profileTokenControl = errorHandlerWrapper((req, res, next) => {
-  const { jwt_secret_key_here } = process.env;
+  const { JWT_SECRET_KEY } = process.env;
 
   if (!isTokenIncluded(req)) {
     return next();
   }
   const token = getTokenFromCookie(req);
 
-  jwt.verify(token, jwt_secret_key_here, (err, decoded) => {
+  jwt.verify(token, JWT_SECRET_KEY, (err, decoded) => {
     if (err) next(new CustomError("Your Authorize is invalid", 401));
     req.user = {
       client_id: decoded.client_id,

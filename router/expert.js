@@ -23,7 +23,6 @@ const {
   getAllPropJobAnnouncements,
   cancelJobApplication,
   verificationSendController,
-  acceptingVerificationController,
   updateLocationController,
 } = require("../controllers/expert");
 
@@ -114,7 +113,7 @@ router.get("/all", getAllExpert);
 //  LOGOUT
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => BODY ATTRIBUTES:
 //    *none
@@ -126,7 +125,7 @@ router.get("/logout", tokenControl, logoutExpert);
 //  SEARCH JOB
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => BODY ATTRIBUTES:
 //    *none
@@ -152,7 +151,7 @@ router.get(
 //  GET ALL PROP WORKS
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => BODY ATTRIBUTES:
 //    *none
@@ -173,7 +172,7 @@ router.get(
 //  GET ALL PROP JOB ANNOUNCEMENTS
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => BODY ATTRIBUTES:
 //    *none
@@ -189,7 +188,7 @@ router.get(
 //  GET ALL REQUESTED WORKS
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => BODY ATTRIBUTES:
 //    *none
@@ -209,7 +208,7 @@ router.get("/get_all_requested_works", [
 //  GET ALL WORKS
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => BODY ATTRIBUTES:
 //    *none
@@ -225,7 +224,7 @@ router.get("/get-all-works", [
 //  VERIFICATE USER ACCOUNT by USING EMAIL VERIFICATION
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => BODY ATTRIBUTES:
 //    *none
@@ -252,11 +251,7 @@ router.get(
 //    *none
 // == == == == == == == == == == == == == == == == == == == ==
 
-router.get(
-  "/signup/verified",
-  verificationTokenAcceptHandler(),
-  acceptingVerificationController
-);
+router.get("/signup/verified", verificationTokenAcceptHandler());
 
 // ==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S
 //  ******** POST REQUESTS ******** POST REQUESTS ********
@@ -318,7 +313,7 @@ router.post("/resetpassword", CreateReqresetPassword(), resetPassword);
 //  UPLOAD PROFILE IMAGE
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => BODY ATTRIBUTES:
 //    * profile_image (form-data)
@@ -339,7 +334,7 @@ router.post(
 //  UPLOAD BACKGROUND IMAGE
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => BODY ATTRIBUTES:
 //    * background_image (form-data)
@@ -364,7 +359,7 @@ router.post(
 // == == == == == == == == == == == == == == == == == == == ==
 //  => BODY ATTRIBUTES:
 //    * account_tye
-//    * accessToken
+//    * access_token
 // == == == == == == == == == == == == == == == == == == == ==
 
 router.post("/social_sign_in", socialSignInUpController);
@@ -377,7 +372,7 @@ router.post("/social_sign_in", socialSignInUpController);
 //  ADD NEW JOBS - EXPERT
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => BODY ATTRIBUTES:
 //    * sector_id
@@ -395,7 +390,7 @@ router.put(
 //  CANCEL JOB APPLICATION - EXPERT
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => BODY ATTRIBUTES:
 //    * application_id
@@ -411,7 +406,7 @@ router.put(
 //  UPDATE LOCATION
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => PARAM ATTRIBUTES:
 //    * state_id
@@ -432,7 +427,7 @@ router.put(
 //  REGISTER PROFILE
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => PARAM ATTRIBUTES:
 //    * username
@@ -457,7 +452,7 @@ router.put("/register_profile", [
 //  CANCEL WORK
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => PARAM ATTRIBUTES:
 //    * work_id
@@ -490,7 +485,7 @@ router.get("/cancel_work_accept/:work_id", cancelWrkAccept, cancelWorkAccept);
 //  CANCEL EXPERT REQUESTS
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => PARAM ATTRIBUTES:
 //    * req_id
@@ -511,7 +506,7 @@ router.put(
 //  CREATE EXPERT REQUESTS
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => PARAM ATTRIBUTES:
 //    * id
@@ -537,7 +532,7 @@ router.post(
 //  ADD DOCUMENT FOR APPLICATION
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => PARAM ATTRIBUTES:
 //    * id
@@ -561,7 +556,7 @@ router.post(
 //  CREATE NEW APPLICATION
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => PARAM ATTRIBUTES:
 //    * id

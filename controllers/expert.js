@@ -36,7 +36,7 @@ const logoutExpert = (req, res, next) => {
     })
     .json({
       success: true,
-      message: "Logout is succesfully",
+      message: "Logout is successfully",
     });
 };
 
@@ -93,7 +93,7 @@ const getAllExpert = errorHandlerWrapper(async (req, res, next) => {
 const uploadedPIController = (req, res, next) => {
   res.status(200).json({
     success: true,
-    message: "Team profile image uploaded successfuly",
+    message: "Team profile image uploaded successfully",
     data: req.uploadedUser,
   });
 };
@@ -105,7 +105,7 @@ const uploadedPIController = (req, res, next) => {
 const uploadedBIController = (req, res, next) => {
   res.status(200).json({
     success: true,
-    message: "Team background image uploaded successfuly",
+    message: "Team background image uploaded successfully",
     data: req.uploadedUser,
   });
 };
@@ -158,7 +158,7 @@ const uploadNewDocuments = errorHandlerWrapper(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    message: "Document uploaded successfuly",
+    message: "Document uploaded successfully",
   });
 });
 
@@ -169,7 +169,7 @@ const uploadNewDocuments = errorHandlerWrapper(async (req, res, next) => {
 const addNewJobs = errorHandlerWrapper(async (req, res, next) => {
   res.status(200).json({
     success: true,
-    message: "You added Positions Successfuly",
+    message: "You added Positions Successfully",
   });
 });
 
@@ -204,7 +204,7 @@ const createExpertRequest = (req, res, next) => {
 const cancelExpertRequest = (req, res, next) => {
   res.status(200).json({
     success: true,
-    message: "You are successfuly canceled your offer",
+    message: "You are successfully canceled your offer",
   });
 };
 
@@ -215,7 +215,8 @@ const cancelExpertRequest = (req, res, next) => {
 const cancelWork = (req, res, next) => {
   res.status(200).json({
     success: true,
-    message: "Cancelling request successfuly, Please wait your expert response",
+    message:
+      "Cancelling request successfully, Please wait your expert response",
   });
 };
 
@@ -226,7 +227,7 @@ const cancelWork = (req, res, next) => {
 const cancelWorkAccept = (req, res, next) => {
   res.status(200).json({
     success: true,
-    message: "You are successfuly canceled work",
+    message: "You are successfully canceled work",
   });
 };
 
@@ -281,14 +282,14 @@ const cancelJobApplication = errorHandlerWrapper(async (req, res, next) => {
     state: { $in: [parseInt(STATE_CREATED), parseInt(STATE_ACTIVE)] },
   }).select({ _id: 1, state: 1 });
 
-  dataControl(jobApplication, next, "Job Applcation is not found", 400);
+  dataControl(jobApplication, next, "Job Application is not found", 400);
 
   jobApplication.state = parseInt(STATE_CANCELED);
   await jobApplication.save();
 
   res.status(200).json({
     success: true,
-    message: "Job Application canceled successfuly",
+    message: "Job Application canceled successfully",
     data: jobApplication,
   });
 });
@@ -306,24 +307,13 @@ const verificationSendController = (req, res, next) => {
 };
 
 // == == == == == == == == == == == == == == == == == == == ==
-//  ACCEPTING VERIFICATE CONTROLLER
-// == == == == == == == == == == == == == == == == == == == ==
-
-const acceptingVerificationController = (req, res, next) => {
-  res.status(200).json({
-    success: true,
-    message: "Your account verification is successfuly",
-  });
-};
-
-// == == == == == == == == == == == == == == == == == == == ==
 //  UPDATE LOCATION CONTROLLER
 // == == == == == == == == == == == == == == == == == == == ==
 
 const updateLocationController = (req, res, next) => {
   res.status(200).json({
     success: true,
-    message: "Your location is updated successfuly",
+    message: "Your location is updated successfully",
   });
 };
 
@@ -360,6 +350,5 @@ module.exports = {
   getAllPropJobAnnouncements,
   cancelJobApplication,
   verificationSendController,
-  acceptingVerificationController,
   updateLocationController,
 };

@@ -10,8 +10,8 @@ const {
   getAllTeam,
   uploadedPIController,
   uploadedBIController,
-  createJobAnouncement,
-  getAllJobAnouncement,
+  createJobAnnouncement,
+  getAllJobAnnouncement,
   dateForInterview,
   acceptJobApplication,
   addNewJobs,
@@ -24,7 +24,6 @@ const {
   cancelJobAnnouncement,
   cancelExpertRequest,
   verificationSendController,
-  acceptingVerificationController,
   updateLocationController,
 } = require("../controllers/team");
 
@@ -102,7 +101,7 @@ router.get("/all", getAllTeam);
 //  LOGOUT
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => BODY ATTRIBUTES:
 //    *none
@@ -114,7 +113,7 @@ router.get("/logout", tokenControl, logoutTeam);
 //  SEARCH JOB
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => BODY ATTRIBUTES:
 //    *none
@@ -140,7 +139,7 @@ router.get(
 //  GET ALL PROP WORKS
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => BODY ATTRIBUTES:
 //    *none
@@ -161,7 +160,7 @@ router.get(
 //  GET ALL REQUESTED WORKS
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => BODY ATTRIBUTES:
 //    *none
@@ -181,7 +180,7 @@ router.get("/get_all_requested_works", [
 //  GET ALL WORKS
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => BODY ATTRIBUTES:
 //    *none
@@ -197,7 +196,7 @@ router.get("/get-all-works", [
 //  VERIFICATE USER ACCOUNT by USING EMAIL VERIFICATION
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => BODY ATTRIBUTES:
 //    *none
@@ -224,17 +223,13 @@ router.get(
 //    *none
 // == == == == == == == == == == == == == == == == == == == ==
 
-router.get(
-  "/signup/verified",
-  verificationTokenAcceptHandler(),
-  acceptingVerificationController
-);
+router.get("/signup/verified", verificationTokenAcceptHandler());
 
 // == == == == == == == == == == == == == == == == == == == ==
 //  GET ALL JOB ANNOUNCEMENT
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => BODY ATTRIBUTES:
 //    *none
@@ -244,7 +239,7 @@ router.get(
   "/get_all_job_announcement",
   tokenControl,
   tokenRoleControl("goodjoby.api.tm"),
-  getAllJobAnouncement
+  getAllJobAnnouncement
 );
 
 // ==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S
@@ -307,7 +302,7 @@ router.post("/resetpassword", CreateReqresetPassword(), resetPassword);
 //  UPLOAD PROFILE IMAGE
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => BODY ATTRIBUTES:
 //    * profile_image (form-data)
@@ -327,7 +322,7 @@ router.post(
 //  UPLOAD BACKGROUND IMAGE
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => BODY ATTRIBUTES:
 //    * background_image (form-data)
@@ -348,7 +343,7 @@ router.post(
 //  CREATE JOB ANNOUNCEMENT
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => BODY ATTRIBUTES:
 //    * content
@@ -362,7 +357,7 @@ router.post(
   dataControl,
   tokenRoleControl("goodjoby.api.tm"),
   blockedControl(Team),
-  createJobAnouncement
+  createJobAnnouncement
 );
 
 // == == == == == == == == == == == == == == == == == == == ==
@@ -373,7 +368,7 @@ router.post(
 // == == == == == == == == == == == == == == == == == == == ==
 //  => BODY ATTRIBUTES:
 //    * account_tye
-//    * accessToken
+//    * access_token
 // == == == == == == == == == == == == == == == == == == == ==
 
 router.post("/social_sign_in", socialSignInUpController);
@@ -386,7 +381,7 @@ router.post("/social_sign_in", socialSignInUpController);
 //  DATE FOR INTERVIEW - TEAM
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => BODY ATTRIBUTES:
 //    * application_id
@@ -403,7 +398,7 @@ router.put(
 //  ADD NEW JOBS - TEAM
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => BODY ATTRIBUTES:
 //    * sector_id
@@ -421,7 +416,7 @@ router.put(
 //  CANCEL JOB ANNOUNCEMENT - TEAM
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => BODY ATTRIBUTES:
 //    * announcement_id
@@ -437,7 +432,7 @@ router.put(
 //  UPDATE LOCATION
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => PARAM ATTRIBUTES:
 //    * state_id
@@ -458,7 +453,7 @@ router.put(
 //  REGISTER PROFILE
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => PARAM ATTRIBUTES:
 //    * username
@@ -480,10 +475,10 @@ router.put("/register_profile", [
 // ==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S
 
 // == == == == == == == == == == == == == == == == == == == ==
-//  ACCEPT JOB APPICATION
+//  ACCEPT JOB APPLICATION
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => BODY ATTRIBUTES:
 //    * application_id
@@ -502,7 +497,7 @@ router.put(
 //  UPGRADE FINISHED PERCENT
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => BODY ATTRIBUTES:
 //    * finished_percent
@@ -536,7 +531,7 @@ router.get("/cancel_work_accept/:work_id", cancelWrkAccept, cancelWorkAccept);
 //  CANCEL WORK - TEAM
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => BODY ATTRIBUTES:
 //    * none
@@ -555,7 +550,7 @@ router.put(
 //  CREATE EXPERT REQUESTS
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => PARAM ATTRIBUTES:
 //    * id
@@ -581,7 +576,7 @@ router.post(
 //  CANCEL EXPERT REQUESTS
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => PARAM ATTRIBUTES:
 //    * req_id
