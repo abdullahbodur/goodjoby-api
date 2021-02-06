@@ -28,7 +28,7 @@ const hashPassword = (next, object) => {
 const generateJWTFromUser = (thisObject) => {
   const {
     JWT_EXPIRE_TIME,
-    jwt_secret_key_here,
+    JWT_SECRET_KEY,
     JWT_ADMIN_TIME,
     JWT_ADMIN_KEY,
     COOKIE_EXPIRE,
@@ -56,13 +56,13 @@ const generateJWTFromUser = (thisObject) => {
     aud: "api.goodjoby",
     role: "auth_user",
     device_id: "DEVICE ID",
-    stg: thisObject.stage || undefined,
-    cr_code: thisObject.creation_code || undefined,
+    stg: thisObject.stage,
+    cr_code: thisObject.creation_code,
   };
 
   const token = jwt.sign(
     payload,
-    thisObject.stage ? JWT_ADMIN_KEY : jwt_secret_key_here
+    thisObject.stage ? JWT_ADMIN_KEY : JWT_SECRET_KEY
     // {
     //   expiresIn: thisObject.stage ? JWT_ADMIN_TIME : JWT_EXPIRE_TIME,
     // }
@@ -110,9 +110,12 @@ const getTokenForAnyPurpose = (arr, expire) => {
 // USERNAME GENERATOR
 // == == == == == == == == == == == == == == == == == == == ==
 
-const generateUniqueUsername = async (model, proposedUname) => {
-  try {
-    return model.findOne({ username: proposedUname }).then((account) => {
+const generateUniqueUsername = (model, proposedUname) => {
+  proposedUname = proposedUname.replace(/\s/g, "");
+
+  return model
+    .findOne({ username: proposedUname })
+    .then((account) => {
       if (account) {
         proposedUname += Math.floor(Math.random() * 1000 + 1);
 
@@ -120,11 +123,11 @@ const generateUniqueUsername = async (model, proposedUname) => {
       }
 
       return { success: true, username: proposedUname };
+    })
+    .catch((err) => {
+      console.log(err);
+      return { success: false, username: proposedUname };
     });
-  } catch (error) {
-    console.log(error);
-    return { success: false, username: proposedUname };
-  }
 };
 
 module.exports = {

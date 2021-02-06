@@ -348,7 +348,7 @@ const cancelJobAnnouncement = errorHandlerWrapper(async (req, res, next) => {
         select: "email name -_id",
       },
       {
-        path: "job_applications.applicaton_id",
+        path: "job_applications.application_id",
         select: "state -_id",
       },
     ])
@@ -384,7 +384,7 @@ const cancelJobAnnouncement = errorHandlerWrapper(async (req, res, next) => {
       let applicationMailList = [];
 
       jobAnnouncement.job_applications.forEach((application) => {
-        if (!stateControl(application.applicaton_id.state))
+        if (!stateControl(application.application_id.state))
           applicationMailList.push(application.expert_id.email);
       });
 

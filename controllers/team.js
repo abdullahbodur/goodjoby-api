@@ -1,12 +1,8 @@
 const errorHandlerWrapper = require("express-async-handler");
 const Team = require("../models/Team");
-const JobAnouncement = require("../models/JobAnnouncement");
+const JobAnnouncement = require("../models/JobAnnouncement");
 const CustomError = require("../helpers/error/CustomError");
 const JobApplication = require("../models/JobApplication");
-const JobAnnouncement = require("../models/JobAnnouncement");
-const { application } = require("express");
-const { dataControl } = require("../helpers/database/databaseControl");
-const { populate } = require("../models/Team");
 const sendMail = require("../helpers/libraries/sendMail");
 
 // == == == == == == == == == == == == == == == == == == == ==
@@ -36,7 +32,7 @@ const logoutTeam = (req, res, next) => {
     })
     .json({
       success: true,
-      message: "Logout is succesfully",
+      message: "Logout is successfully",
     });
 };
 
@@ -93,7 +89,7 @@ const getAllTeam = errorHandlerWrapper(async (req, res, next) => {
 const uploadedPIController = (req, res, next) => {
   res.status(200).json({
     success: true,
-    message: "Team profile image uploaded successfuly",
+    message: "Team profile image uploaded successfully",
     data: req.uploadedUser,
   });
 };
@@ -105,19 +101,19 @@ const uploadedPIController = (req, res, next) => {
 const uploadedBIController = (req, res, next) => {
   res.status(200).json({
     success: true,
-    message: "Team background image uploaded successfuly",
+    message: "Team background image uploaded successfully",
     data: req.uploadedUser,
   });
 };
 
 // == == == == == == == == == == == == == == == == == == == ==
-//  CREATE JOB ANOUNCEMENT FOR TEAM
+//  CREATE JOB ANNOUNCEMENT FOR TEAM
 // == == == == == == == == == == == == == == == == == == == ==
 
-const createJobAnouncement = errorHandlerWrapper(async (req, res, next) => {
+const createJobAnnouncement = errorHandlerWrapper(async (req, res, next) => {
   const data = req.body;
 
-  const newAnouncement = await JobAnouncement.create({
+  const newAnnouncement = await JobAnnouncement.create({
     ...data,
     expireDate: new Date(Date.now() + parseInt(data["expireDate"])),
     team: req.user.client_id,
@@ -125,25 +121,25 @@ const createJobAnouncement = errorHandlerWrapper(async (req, res, next) => {
 
   const team = req.user.userObject;
 
-  team.job_announcements.push(newAnouncement);
+  team.job_announcements.push(newAnnouncement);
 
   await team.save();
 
   res.status(200).json({
     success: true,
     team: team,
-    anouncement: newAnouncement,
+    announcement: newAnnouncement,
   });
 });
 
 // == == == == == == == == == == == == == == == == == == == ==
-//  GET ALL JOB ANOUNCEMENT FOR TEAM
+//  GET ALL JOB ANNOUNCEMENT FOR TEAM
 // == == == == == == == == == == == == == == == == == == == ==
 
-const getAllJobAnouncement = errorHandlerWrapper(async (req, res, next) => {
+const getAllJobAnnouncement = errorHandlerWrapper(async (req, res, next) => {
   const id = req.user.client_id;
 
-  const job_announcements = await JobAnouncement.find({ team: id });
+  const job_announcements = await JobAnnouncement.find({ team: id });
 
   res.status(200).json({
     success: true,
@@ -173,7 +169,7 @@ const dateForInterview = errorHandlerWrapper(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    message: "Date for Interview successfuly",
+    message: "Date for Interview successfully",
     date: jobApplication.interviewDate,
   });
 });
@@ -226,7 +222,7 @@ const acceptJobApplication = errorHandlerWrapper(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    message: "Accepted successfuly",
+    message: "Accepted successfully",
   });
 });
 
@@ -237,7 +233,7 @@ const acceptJobApplication = errorHandlerWrapper(async (req, res, next) => {
 const addNewJobs = errorHandlerWrapper(async (req, res, next) => {
   res.status(200).json({
     success: true,
-    message: "You added Positions Successfuly",
+    message: "You added Positions Successfully",
   });
 });
 
@@ -250,7 +246,7 @@ const getSearchSubJob = (req, res, next) => {
 };
 
 // == == == == == == == == == == == == == == == == == == == ==
-//  GET ALL PROPERY WORKS
+//  GET ALL PROPERLY WORKS
 // == == == == == == == == == == == == == == == == == == == ==
 
 const getAllPropWorks = errorHandlerWrapper(async (req, res, next) => {
@@ -276,7 +272,8 @@ const createExpertRequest = errorHandlerWrapper(async (req, res, next) => {
 const cancelWork = (req, res, next) => {
   res.status(200).json({
     success: true,
-    message: "Cancelling request successfuly, Please wait your expert response",
+    message:
+      "Cancelling request successfully, Please wait your expert response",
   });
 };
 
@@ -287,7 +284,7 @@ const cancelWork = (req, res, next) => {
 const cancelWorkAccept = (req, res, next) => {
   res.status(200).json({
     success: true,
-    message: "You are successfuly canceled work",
+    message: "You are successfully canceled work",
   });
 };
 
@@ -298,7 +295,7 @@ const cancelWorkAccept = (req, res, next) => {
 const upgradeFinishedPercent = (req, res, next) => {
   res.status(200).json({
     success: true,
-    message: "You are upgraded finished percent successfuly",
+    message: "You are upgraded finished percent successfully",
     data: req.work,
   });
 };
@@ -312,7 +309,7 @@ const cancelJobAnnouncement = async (req, res, next) => {
   const { STATE_ACTIVE, STATE_CREATED, STATE_CANCELED } = process.env;
   dataControl(announcement_id, next, "Please provide an Announcement ID", 400);
 
-  const jobAnouncement = await JobAnnouncement.findOne({
+  const jobAnnouncement = await JobAnnouncement.findOne({
     _id: announcement_id,
     is_accepted: false,
     state: { $in: [parseInt(STATE_ACTIVE), parseInt(STATE_CREATED)] },
@@ -331,26 +328,26 @@ const cancelJobAnnouncement = async (req, res, next) => {
             select: "name email",
           },
           {
-            path: "applicaton_id",
+            path: "application_id",
             select: "state",
           },
         ],
       },
     ]);
 
-  dataControl(jobAnouncement, next, "Job Announcement could not find", 400);
+  dataControl(jobAnnouncement, next, "Job Announcement could not find", 400);
 
-  const defState = jobAnouncement.state;
+  const defState = jobAnnouncement.state;
 
   try {
-    jobAnouncement.state = parseInt(STATE_CANCELED);
-    await jobAnouncement.save();
+    jobAnnouncement.state = parseInt(STATE_CANCELED);
+    await jobAnnouncement.save();
 
-    if (jobAnouncement.job_applications.length > 0) {
+    if (jobAnnouncement.job_applications.length > 0) {
       let applicationMailList = [];
 
-      jobAnouncement.job_applications.forEach((jobApplication) => {
-        if (!stateControl(jobApplication.applicaton_id.state))
+      jobAnnouncement.job_applications.forEach((jobApplication) => {
+        if (!stateControl(jobApplication.application_id.state))
           applicationMailList.push(job_applications.expert_id.email);
       });
 
@@ -362,13 +359,13 @@ const cancelJobAnnouncement = async (req, res, next) => {
       });
     }
   } catch (error) {
-    jobAnouncement.state = defState;
-    await jobAnouncement.save();
+    jobAnnouncement.state = defState;
+    await jobAnnouncement.save();
     return next(error);
   }
   res
     .status(200)
-    .json({ success: true, message: "Announcement canceled successfuly" });
+    .json({ success: true, message: "Announcement canceled successfully" });
 };
 
 // == == == == == == == == == == == == == == == == == == == ==
@@ -378,12 +375,12 @@ const cancelJobAnnouncement = async (req, res, next) => {
 const cancelExpertRequest = (req, res, next) => {
   res.status(200).json({
     success: true,
-    message: "You are successfuly canceled your offer",
+    message: "You are successfully canceled your offer",
   });
 };
 
 // == == == == == == == == == == == == == == == == == == == ==
-//  SENDING VERIFICATE CONTROLLER
+//  SENDING VERIFICATION CONTROLLER
 // == == == == == == == == == == == == == == == == == == == ==
 
 const verificationSendController = (req, res, next) => {
@@ -395,24 +392,13 @@ const verificationSendController = (req, res, next) => {
 };
 
 // == == == == == == == == == == == == == == == == == == == ==
-//  ACCEPTING VERIFICATE CONTROLLER
-// == == == == == == == == == == == == == == == == == == == ==
-
-const acceptingVerificationController = (req, res, next) => {
-  res.status(200).json({
-    success: true,
-    message: "Your account verification is successfuly",
-  });
-};
-
-// == == == == == == == == == == == == == == == == == == == ==
 //  UPDATE LOCATION CONTROLLER
 // == == == == == == == == == == == == == == == == == == == ==
 
 const updateLocationController = (req, res, next) => {
   res.status(200).json({
     success: true,
-    message: "Your location is updated successfuly",
+    message: "Your location is updated successfully",
   });
 };
 
@@ -437,8 +423,8 @@ module.exports = {
   getAllTeam,
   uploadedPIController,
   uploadedBIController,
-  createJobAnouncement,
-  getAllJobAnouncement,
+  createJobAnnouncement,
+  getAllJobAnnouncement,
   dateForInterview,
   acceptJobApplication,
   addNewJobs,
@@ -451,6 +437,5 @@ module.exports = {
   cancelJobAnnouncement,
   cancelExpertRequest,
   verificationSendController,
-  acceptingVerificationController,
   updateLocationController,
 };

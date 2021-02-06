@@ -17,10 +17,9 @@ const { generateUniqueUsername } = require("../modelHelpers/modelHelper");
 const Client = require("../../models/Client");
 const Expert = require("../../models/Expert");
 const {
-  verficiationMail,
+  verificationMail,
   resetPassword,
 } = require("../../templates/authTemplates");
-const Team = require("../../models/Team");
 const State = require("../../models/LocationModels/State");
 
 // == == == == == == == == == == == == == == == == == == == ==
@@ -39,8 +38,14 @@ const authRegister = errorHandlerWrapper(async (model, req, res, next) => {
         )
       );
 
-    if (model !== Admin)
-      username = username ? username : generateUniqueUsername(name);
+    if (model !== Admin && !username) {
+      const result = await generateUniqueUsername(model, name);
+
+      if (!result.success)
+        return next(new CustomError("Ops! Something went wrong.", 500));
+
+      username = result.username;
+    }
 
     const objectModel = await model.create({
       name,
@@ -321,7 +326,7 @@ const verificationNewRequest = errorHandlerWrapper(async (model, req, next) => {
       from: process.env.SMTP_USER,
       to: userObject.email,
       subject: "Goodjoby Verification Mail",
-      html: verficiationMail(verificationUrl, userObject.name),
+      html: verificationMail(verificationUrl, userObject.name),
     });
   } catch (error) {
     userObject.token = undefined;
@@ -342,7 +347,7 @@ const verificationNewRequest = errorHandlerWrapper(async (model, req, next) => {
 // == == == == == == == == == == == == == == == == == == == ==
 
 const acceptVerificationToken = errorHandlerWrapper(
-  async (model, req, next) => {
+  async (model, req, res, next) => {
     const { verificationToken } = req.query;
 
     if (!verificationToken)
@@ -361,17 +366,14 @@ const acceptVerificationToken = errorHandlerWrapper(
     if (!objectModel) {
       return next(new CustomError("Ops, token is invalid or expired", 400));
     }
-    try {
-      objectModel.creation_code = process.env.USER_VERIFICATED;
-      objectModel.token = undefined;
-      objectModel.tokenExpire = undefined;
 
-      await objectModel.save();
-    } catch (error) {
-      return next(error);
-    }
+    objectModel.creation_code = process.env.USER_VERIFICATED;
+    objectModel.token = undefined;
+    objectModel.tokenExpire = undefined;
 
-    return next();
+    await objectModel.save();
+
+    sendJwtToUser(objectModel, res);
   }
 );
 

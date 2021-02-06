@@ -21,9 +21,7 @@ const {
   cancelWorkAccept,
   getWorks,
   getMessages,
-  socialIDController,
   verificationSendController,
-  acceptingVerificationController,
   updateLocationController,
 } = require("../controllers/client");
 
@@ -98,7 +96,7 @@ router.get("/all", getAllClient);
 //  LOGOUT
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => BODY ATTRIBUTES:
 //    *none
@@ -131,7 +129,7 @@ router.get(
 //  GET MESSAGES
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => BODY ATTRIBUTES:
 //    *none
@@ -147,7 +145,7 @@ router.get(
 //  GET WORKS
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => BODY ATTRIBUTES:
 //    *none
@@ -168,7 +166,7 @@ router.get(
 //  VERIFICATE USER ACCOUNT by USING EMAIL VERIFICATION
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => BODY ATTRIBUTES:
 //    *none
@@ -195,11 +193,7 @@ router.get(
 //    *none
 // == == == == == == == == == == == == == == == == == == == ==
 
-router.get(
-  "/signup/verified",
-  verificationTokenAcceptHandler(),
-  acceptingVerificationController
-);
+router.get("/signup/verified", verificationTokenAcceptHandler());
 
 // ==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S==S
 //  ******** POST REQUESTS ******** POST REQUESTS ********
@@ -261,7 +255,7 @@ router.post("/resetpassword", CreateReqresetPassword(), resetPassword);
 //  UPLOAD PROFILE IMAGE
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => BODY ATTRIBUTES:
 //    * profile_image (form-data)
@@ -282,7 +276,7 @@ router.post(
 //  UPLOAD BACKGROUND IMAGE
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => BODY ATTRIBUTES:
 //    * background_image (form-data)
@@ -303,7 +297,7 @@ router.post(
 //  CREATE PENDING WORK
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => BODY ATTRIBUTES:
 //    * description
@@ -329,7 +323,7 @@ router.post(
 // == == == == == == == == == == == == == == == == == == == ==
 //  => BODY ATTRIBUTES:
 //    * account_tye
-//    * accessToken
+//    * access_token
 // == == == == == == == == == == == == == == == == == == == ==
 
 router.post("/social_sign_in", socialSignInUpController());
@@ -342,7 +336,7 @@ router.post("/social_sign_in", socialSignInUpController());
 //  UPDATE LOCATION
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => PARAM ATTRIBUTES:
 //    * state_id
@@ -363,7 +357,7 @@ router.put(
 //  REGISTER PROFILE
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => PARAM ATTRIBUTES:
 //    * username
@@ -400,7 +394,7 @@ router.get("/cancel_work_accept/:work_id", cancelWrkAccept, cancelWorkAccept);
 //  CANCEL WORK
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => PARAM ATTRIBUTES:
 //    * work_id
@@ -421,7 +415,7 @@ router.put(
 //  CANCEL PENDING WORK
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => PARAM ATTRIBUTES:
 //    * work_id
@@ -437,7 +431,7 @@ router.put(
 //  ACCEPT OFFER
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => PARAM ATTRIBUTES:
 //    * offer_id
@@ -468,7 +462,7 @@ router.get("/get_service_questions/:service_id", getServiceQuestions);
 //  ADD DOCUMENT TO WORK - CLIENT
 // == == == == == == == == == == == == == == == == == == == ==
 //  => ADDITION HEADERS:
-//   * Connection = accessToken
+//   * Connection = access_token
 // == == == == == == == == == == == == == == == == == == == ==
 //  => PARAM ATTRIBUTES:
 //    * service_id

@@ -110,7 +110,7 @@ const verificationTokenHandler = () => {
 
 const verificationTokenAcceptHandler = () => {
   return (req, res, next) => {
-    acceptVerificationToken(Expert, req, next);
+    acceptVerificationToken(Expert, req, res, next);
   };
 };
 
